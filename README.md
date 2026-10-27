@@ -94,7 +94,7 @@ npm run test:e2e
 
 Browser tests start a production server on port 4317 to avoid conflicting with normal development. Twitch protocol tests use fixtures; a live broadcaster session must be verified with your own Twitch app before submission.
 
-The expanded game passes **41 local automated tests**, including complete Cadet and Commander keyboard playthroughs, mobile pointer release, uniquely solvable puzzles, limited boosts, and disconnect safety. The initial release also passed a production Docker build/startup check in [GitHub CI](https://github.com/arnavgupta2004/SignalLost/actions/runs/40521582904). The expanded version's CI verification is tracked in the [validation record](docs/VALIDATION.md).
+The quality-upgraded application passed **41 automated tests** and a production Docker build/startup check in [GitHub CI](https://github.com/arnavgupta2004/SignalLost/actions/runs/40552524553). Public-registry audits reported zero vulnerabilities. See the [validation record](docs/VALIDATION.md) and [judging-focused quality review](docs/QUALITY_REVIEW.md).
 
 `npm run format:check` and `npm run check:portability` keep the source reviewable and dependency installation portable.
 
