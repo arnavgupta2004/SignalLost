@@ -2,6 +2,8 @@
 
 The original spacecraft illustration, radar, signal glyphs, interface layouts, mission text, and synthesized audio are created for SignalLost. No stock photographs, copyrighted music, or third-party game art are bundled.
 
+Prettier (MIT) formats the source during development.
+
 Dependencies and fonts are installed from the exact versions in `package-lock.json`.
 
 | Component               | License                           | Use                                |

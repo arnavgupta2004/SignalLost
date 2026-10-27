@@ -551,6 +551,16 @@ export function DockingConsole({
         <span>
           Chat: <code>!boost</code> → six seconds without drift
         </span>
+        {state.mode === 'training' && (
+          <button
+            className="button button-outline simulated-boost"
+            disabled={disabled || d.boostsUsed >= 3}
+            onClick={() => action({ type: 'simulate-boost' })}
+          >
+            <Zap size={13} />
+            Simulate crew boost
+          </button>
+        )}
       </div>
     </div>
   );

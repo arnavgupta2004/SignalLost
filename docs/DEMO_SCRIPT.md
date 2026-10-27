@@ -1,73 +1,77 @@
-# A 2-minute-40-second demonstration
+# A 2-minute-45-second demonstration
 
-Record **real Twitch chat and the connected cockpit**, then cut in viewer intel and Codex footage. Do not present simulated training as live Twitch participation.
+Record real Twitch chat and the connected cockpit. Cut to the crew panel when explaining the missing information, then show the actual Codex build thread. Use Commander for the main demonstration.
 
 ## 0:00–0:12 — The hook
 
-Show the landing page and original ship art.
+Show the landing page and original ship artwork, then cut immediately to the cockpit.
 
 > “In SignalLost, the streamer has the controls, but chat has the answers. Six stranded survivors only get home if we work together.”
 
-Cut immediately to the cockpit and its six-minute oxygen window.
+## 0:12–0:25 — Prove Twitch is connected
 
-## 0:12–0:28 — Prove Twitch is connected
+Show the connected channel badge. A real viewer sends `!join nav` in Twitch. Show their display name appearing on the cockpit uplink with the **TWITCH** source label.
 
-Show the connected channel badge. A viewer sends `!join nav` in the actual Twitch channel. Show their name arriving in the cockpit uplink and crew manifest with the **TWITCH** label.
+> “Viewers open this crew link. They see the information I’m missing, and late arrivals can help immediately.”
 
-> “Viewers open this crew link. They can join halfway through and help with whatever system is active.”
+## 0:25–0:45 — Combine navigation information
 
-## 0:28–0:55 — Navigation
+Show the pilot's radiation limit and beacon minimum, then the viewer's three measured scans. A viewer sends the correct `!nav SECTOR` through Twitch, and the pilot selects that corridor.
 
-Briefly show the viewer's radar with one safe corridor. Return to the cockpit, where all sectors lack telemetry.
+> “I know what my ship can survive. Chat has the scans. Neither screen tells the whole story.”
 
-Have viewers send `!nav SECTOR`. Show the readback panel reflecting their distinct voices. The streamer selects the crew's route.
+## 0:45–1:05 — Solve the emergency schematic
 
-> “My radar is blind. Their radar works. Chat is literally my eyes.”
+Show the crew's four wiring rules and proposed relay settings. The viewer sends `!power`, then the pilot operates the real switches and engages the emergency bus.
 
-## 0:55–1:20 — Engineering
+> “They solve the schematic. I operate the switches. The crew guides the flight.”
 
-Cut to the viewer schematic. Have a viewer send the correct `!power` command through Twitch. The streamer toggles the required relays and engages the bus.
+## 1:05–1:25 — Assemble the distress handshake
 
-> “They see the wiring diagram. I operate the switches. Chat advises; the pilot still makes the call.”
+Show the pilot's shuffled band order, then the viewer's labeled symbol clues. A viewer sends `!code A:SUN B:... C:... D:...` through Twitch. The pilot enters the meanings in their transmission order.
 
-## 1:20–1:45 — Signal decoding
+> “Chat knows what each band means. I know which order to send. We combine both sides to answer the survivors.”
 
-Show the four survivor clues, a viewer assembling symbols, and the corresponding `!code` message in Twitch. The streamer enters the sequence and transmits it.
+## 1:25–1:55 — The memorable moment: chat brings them home
 
-Show the rescue debrief and viewer credits.
+Show the moving ship and capsule. A viewer sends `!dock LANE`. The pilot steers with A/D, engages the tractor, and corrects ion drift.
 
-> “The rescue belongs to the whole community. Their names are on the flight record.”
+Have a real viewer send **`!boost`** while the beam is aligned. Keep their Twitch message, credited power-cell signal, stabilization countdown, and recovery progress visible.
 
-## 1:45–2:20 — Show Codex building it
+> “The last approach is mine to fly. But chat can deliver a power cell—six seconds of clear flight. That message is helping bring the capsule home.”
 
-Use a screen recording of the actual Codex build thread and repository.
+Finish the extraction and briefly show all six survivor portraits and the crew's flight record.
 
-Show:
+## 1:55–2:30 — Show Codex building it
 
-1. The requested asymmetric gameplay.
-2. Codex creating the mission engine and separate cockpit/viewer interfaces.
-3. The viewer-state projection that keeps answers off stream.
-4. A browser-test failure for rapid clicks and the resulting fix.
-5. Passing tests and the GitHub commit history.
+Use a screen recording of the genuine Codex thread and repository. Show:
 
-> “I built this with Codex, from the mission engine and EventSub connection to the original spacecraft artwork. Browser tests caught dropped inputs, and Codex fixed them before the demo.”
+1. Codex designing the two-sided mission and four-stage rescue.
+2. The authoritative engine and role-specific projections.
+3. Tests for uniquely solvable wiring, steering release, boost limits, and a full Commander playthrough.
+4. The passing CI result and commit history.
 
-Keep the actual session ID visible briefly, or add it as a caption:
+> “I built this with Codex: the mission engine, Twitch EventSub connection, original vector artwork, and both sides of the interface. Automated playthroughs verified the rescue, including the real control and timing rules.”
+
+Briefly show the actual build session ID:
 
 `01a17ca8-f1c2-7ec1-846f-60149169589e`
 
-## 2:20–2:40 — Close
+## 2:30–2:45 — Close
 
-Show the transparent OBS overlay on a real Twitch scene, then the debrief.
+Show the transparent OBS overlay on the real Twitch scene, then the debrief.
 
-> “No install for viewers. No paywall. A solo training mode for testing, and a real cooperative mission for your community. SignalLost: bring them home.”
+> “No install for viewers. A guided flight for learning, a Commander mission for your community, and a rescue that belongs to everyone. SignalLost: bring them home.”
 
 ## Recording preparation
 
-- Deploy at a public HTTPS address and verify the viewer link on another device.
-- Use one or two cooperating viewers, or separate Twitch accounts you control.
-- Rehearse to keep every transition quick; the full mission is six minutes, but the demonstration should be edited below three.
-- Use screen capture of the genuine Codex thread; the Git history alone does not show the build session.
-- Keep client secrets, tokens, personal notifications, and unrelated desktop content out of footage.
-- Use the application's original synthesized tones or other audio you have permission to use.
-- Upload the final video as **public**, not private, on YouTube.
+- Deploy to a public HTTPS address and verify the crew link on another device.
+- Verify a real broadcaster OAuth/EventSub session before recording.
+- Use one to three cooperating viewers. Each viewer gets one power cell; the mission has three total.
+- Toggle **Broadcast layout** for the cockpit capture and keep the crew panel off the live broadcast.
+- Rehearse the controls. Edit the five-minute mission below three minutes; show the cause and effect of real chat participation.
+- Capture the genuine Codex thread. Git history alone does not show the build session.
+- Keep secrets and unrelated desktop content out of footage. Use only permitted audio and visuals.
+- Upload the final video as publicly visible on YouTube.
+
+The private local training rehearsal and screenshots are examples of the product, not proof of functioning on Twitch.

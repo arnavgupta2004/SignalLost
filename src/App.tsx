@@ -563,6 +563,9 @@ function Host({
 }) {
   const [setup, setSetup] = useState(state.phase === 'lobby' && state.mode === 'twitch');
   const [resetConfirm, setResetConfirm] = useState(false);
+  const [broadcast, setBroadcast] = useState(
+    () => localStorage.getItem('signallost:broadcast') === '1',
+  );
   const active = state.phase === 'active';
   const finished = state.phase === 'rescued' || state.phase === 'lost';
   const disabled = !connected || !active || state.paused;
@@ -595,7 +598,7 @@ function Host({
     }
   }
   return (
-    <>
+    <div className={broadcast ? 'broadcast-layout' : 'standard-layout'}>
       <div className="page-title-row">
         <div>
           <span className="eyebrow">RESCUE OPERATION / SL—006</span>
@@ -605,6 +608,17 @@ function Host({
           <p>Six survivors. One failing beacon. Your crew is their only way home.</p>
         </div>
         <div className="mission-controls">
+          <button
+            className={`button ${broadcast ? 'button-outline' : 'button-quiet'}`}
+            aria-pressed={broadcast}
+            onClick={() => {
+              setBroadcast(!broadcast);
+              localStorage.setItem('signallost:broadcast', broadcast ? '0' : '1');
+            }}
+          >
+            <Monitor size={15} />
+            Broadcast layout
+          </button>
           <button className="button button-quiet" onClick={() => setSetup(!setup)}>
             <LinkIcon size={15} />
             Stream setup <ChevronDown size={14} className={setup ? 'rotate' : ''} />
@@ -794,7 +808,10 @@ function Host({
                         setSetup(false);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      disabled={!connected}
+                      disabled={
+                        !connected ||
+                        (state.mode === 'twitch' && state.twitch.status !== 'connected')
+                      }
                     >
                       <Play size={17} fill="currentColor" />
                       Launch rescue <ArrowRight size={18} />
@@ -1008,10 +1025,10 @@ function Host({
             </span>
           </div>
         </div>
-        <aside className="cockpit-sidebar">
+        <aside className={`cockpit-sidebar ${finished ? 'debrief-sidebar' : ''}`}>
           <SignalFeed state={state} />
           <CrewReadback state={state} />
-          <SurvivorManifest state={state} />
+          {!finished && <SurvivorManifest state={state} />}
           <CrewRoster state={state} />
           <div className="crew-invite-mini">
             <span className="eyebrow">CALLING ALL CREW</span>
@@ -1045,7 +1062,7 @@ function Host({
           </div>
         </Modal>
       )}
-    </>
+    </div>
   );
 }
 function Training({
@@ -1095,16 +1112,6 @@ function Training({
           <ChevronDown size={17} className={expanded ? 'rotate' : ''} />
         </button>
       </div>
-      {state.stage === 3 && state.phase === 'active' && (
-        <button
-          className="button button-outline simulated-boost"
-          disabled={!connected || state.paused || state.docking.boostsUsed >= 3}
-          onClick={() => action({ type: 'simulate-boost' })}
-        >
-          <Zap size={14} />
-          Simulate crew boost<span>{3 - state.docking.boostsUsed} cells left</span>
-        </button>
-      )}
       {expanded && (
         <form className="training-form" onSubmit={submit}>
           <label>
@@ -1476,10 +1483,21 @@ function Viewer({ state, remaining }: { state: RoomState; remaining: number }) {
                   </a>
                 ) : (
                   <div className="training-viewer-note">
-                    <Badge tone="amber">TRAINING MISSION</Badge>
+                    <Badge tone="amber">
+                      {state.mode === 'training' ? 'TRAINING MISSION' : 'CHANNEL NOT CONNECTED'}
+                    </Badge>
                     <p>
-                      Have the pilot paste your command into <strong>Training comms</strong>, or
-                      connect Twitch for live participation.
+                      {state.mode === 'training' ? (
+                        <>
+                          Have the pilot paste your command into <strong>Training comms</strong>, or
+                          connect Twitch for live participation.
+                        </>
+                      ) : (
+                        <>
+                          Your pilot needs to connect Twitch from <strong>Stream setup</strong>.
+                          Your intel is ready; chat signals will appear once the channel connects.
+                        </>
+                      )}
                     </p>
                   </div>
                 )}
@@ -1578,8 +1596,6 @@ function Debrief({ state, onRestart }: { state: RoomState; onRestart?: () => voi
           </span>
         ))}
       </div>
-      {rescued && <SurvivorManifest state={state} />}
-      <FlightRecorder state={state} />
       {heroes.length > 0 && (
         <div className="debrief-heroes">
           <span className="eyebrow">THE PEOPLE WHO MADE IT HAPPEN</span>
@@ -1595,6 +1611,8 @@ function Debrief({ state, onRestart }: { state: RoomState; onRestart?: () => voi
           </div>
         </div>
       )}
+      {rescued && <SurvivorManifest state={state} />}
+      <FlightRecorder state={state} />
       {onRestart ? (
         <button className="button button-lime button-large" onClick={onRestart}>
           <RotateCcw size={16} />
@@ -1735,11 +1753,13 @@ function Manual() {
             ))}
           </div>
           <p>
-            Commands are guidance for the pilot, not automatic controls. The pilot makes each
-            decision. Anyone can read intel; <code>!join nav</code>, <code>!join engineer</code>, or{' '}
-            <code>!join decoder</code> adds their name to the crew manifest.{' '}
-            <code>!ping message</code> sends a general signal. Commands have a 1.5-second cooldown
-            per viewer.
+            Finding commands guide the pilot. In the final approach, <code>!dock 1–5</code>{' '}
+            identifies the safe lane and <code>!boost</code> delivers a power cell: six seconds
+            without drift, with three cells per mission and one per viewer. The pilot still steers
+            and operates the tractor. Anyone can read intel; <code>!join nav</code>,{' '}
+            <code>!join engineer</code>, or <code>!join decoder</code> adds their name to the crew
+            manifest. <code>!ping message</code> sends a general signal. Commands have a 1.5-second
+            cooldown per viewer.
           </p>
         </section>
         <section id="twitch">

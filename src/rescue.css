@@ -339,6 +339,7 @@
 .docking-scene > svg {
   width: 100%;
   display: block;
+  max-height: 250px;
 }
 .docking-scene.stabilized {
   box-shadow: inset 0 0 60px #83d6d80b;
@@ -466,10 +467,192 @@
   font: 9px var(--mono);
 }
 .simulated-boost {
-  margin-top: 13px;
+  margin-top: 0;
   font-size: 10px;
   border-color: #83d6d83b;
   color: var(--cyan);
+}
+@media (min-width: 901px) {
+  .broadcast-layout .page-title-row {
+    margin-bottom: 15px;
+  }
+  .broadcast-layout .page-title-row h1 {
+    font-size: 26px;
+  }
+  .broadcast-layout .page-title-row > div:first-child > p {
+    display: none;
+  }
+  .broadcast-layout .stats-large .stat {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .broadcast-layout .stats-large .stat > strong {
+    font-size: 36px;
+  }
+  .broadcast-layout .stat > .eyebrow {
+    font-size: 9px;
+  }
+  .broadcast-layout .stat-unit,
+  .broadcast-layout .stat-caption {
+    font-size: 10px;
+  }
+  .broadcast-layout .mission-stats {
+    margin-bottom: 17px;
+  }
+  .broadcast-layout .panel-heading {
+    min-height: 43px;
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+  .broadcast-layout .panel-heading > .eyebrow {
+    font-size: 10px;
+  }
+  .broadcast-layout .panel-heading > .badge {
+    font-size: 9px;
+  }
+  .broadcast-layout .mission-steps {
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+  .broadcast-layout .mission-step {
+    font-size: 11px;
+  }
+  .broadcast-layout .system-intro {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+  .broadcast-layout .system-intro h2 {
+    font-size: 27px;
+  }
+  .broadcast-layout .system-intro p {
+    display: none;
+  }
+  .broadcast-layout .docking-scene > svg {
+    max-height: 230px;
+  }
+  .broadcast-layout .docking-instruments {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+  .broadcast-layout .docking-instruments strong {
+    font-size: 32px;
+  }
+  .broadcast-layout .docking-instruments .eyebrow {
+    font-size: 9px;
+  }
+  .broadcast-layout .position-caption {
+    font-size: 8px;
+  }
+  .broadcast-layout .dock-steer {
+    padding-top: 16px;
+    padding-bottom: 14px;
+  }
+  .broadcast-layout .dock-steer .button {
+    font-size: 14px;
+    min-height: 49px;
+  }
+  .broadcast-layout .docking-hint p {
+    font-size: 13px;
+  }
+  .broadcast-layout .boost-status {
+    flex-wrap: wrap;
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+  .broadcast-layout .boost-status > span {
+    font-size: 12px;
+  }
+  .broadcast-layout .simulated-boost {
+    margin-left: auto;
+    font-size: 11px;
+  }
+  .broadcast-layout .feedback {
+    font-size: 13px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+  .broadcast-layout .signal-feed {
+    height: 250px;
+  }
+  .broadcast-layout .signal-item {
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+  .broadcast-layout .signal-item > p {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .broadcast-layout .signal-meta > strong {
+    font-size: 14px;
+  }
+  .broadcast-layout .signal-avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+  .broadcast-layout .signal-source {
+    font-size: 8px;
+  }
+  .broadcast-layout .signal-footer {
+    font-size: 9px;
+    line-height: 1.8;
+  }
+  .broadcast-layout .readback-findings strong {
+    font-size: 13px;
+  }
+  .broadcast-layout .readback-findings span {
+    font-size: 11px;
+  }
+  .broadcast-layout .readback-note {
+    font-size: 10px;
+  }
+  .broadcast-layout .survivor-faces {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    padding: 18px;
+  }
+  .broadcast-layout .survivor-faces svg {
+    width: 33px;
+    height: 37px;
+  }
+  .broadcast-layout .survivor-faces strong {
+    font-size: 12px;
+  }
+  .broadcast-layout .survivor-faces span {
+    font-size: 7px;
+  }
+  .broadcast-layout .survivor-transmission p {
+    font-size: 13px;
+  }
+  .broadcast-layout .cockpit-sidebar > .crew-panel,
+  .broadcast-layout .crew-invite-mini,
+  .broadcast-layout .cockpit-footnote {
+    display: none;
+  }
+  .broadcast-layout .sector-button > strong {
+    font-size: 29px;
+  }
+  .broadcast-layout .sector-button > span:last-child {
+    font-size: 13px;
+  }
+  .broadcast-layout .navigation-limits > span:not(.eyebrow) {
+    font-size: 13px;
+  }
+  .broadcast-layout .navigation-limits strong {
+    font-size: 15px;
+  }
+  .broadcast-layout .navigation-limits > p {
+    font-size: 11px;
+  }
+  .broadcast-layout .glyph-controls > button {
+    font-size: 11px;
+  }
+  .broadcast-layout .transmission-order p {
+    font-size: 12px;
+  }
+  .broadcast-layout .transmission-order strong {
+    font-size: 28px;
+  }
 }
 .simulated-boost > span {
   font: 8px var(--mono);
@@ -917,5 +1100,20 @@
   }
   .capture-beam {
     animation: none;
+  }
+}
+.debrief-heroes > div > span {
+  font-size: 14px;
+  padding: 12px 17px;
+}
+.debrief-heroes small {
+  font-size: 9px;
+}
+@media (min-width: 901px) {
+  .broadcast-layout .cockpit-sidebar.debrief-sidebar > .crew-panel {
+    display: block;
+  }
+  .broadcast-layout .debrief-sidebar .crew-names > span {
+    font-size: 12px;
   }
 }

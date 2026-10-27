@@ -13,6 +13,7 @@ import {
 const now = 100_000;
 function started(mode: 'training' | 'twitch' = 'training') {
   const room = createRoom(mode, false, now);
+  if (mode === 'twitch') room.state.twitch.status = 'connected';
   hostAction(room, { type: 'start' }, now);
   return room;
 }
@@ -62,7 +63,21 @@ test('navigation measurements identify exactly one corridor satisfying the pilot
     );
     assert.equal(safe.length, 1);
     assert.equal(safe[0].sector, room.intel.safeSector);
+    assert.equal(new Set(room.intel.code).size, 4);
+    assert.ok(room.state.decoderOrder.some((value, index) => value !== index));
   }
+});
+test('live missions wait for a connected Twitch uplink while training remains available', () => {
+  const live = createRoom('twitch', false, now);
+  hostAction(live, { type: 'start' }, now);
+  assert.equal(live.state.phase, 'lobby');
+  assert.match(live.state.feedback!.text, /Connect Twitch/);
+  live.state.twitch.status = 'connected';
+  hostAction(live, { type: 'start' }, now);
+  assert.equal(live.state.phase, 'active');
+  const training = createRoom('training', false, now);
+  hostAction(training, { type: 'start' }, now);
+  assert.equal(training.state.phase, 'active');
 });
 test('every generated engineering schematic has exactly one solution', () => {
   for (let i = 0; i < 30; i++) {

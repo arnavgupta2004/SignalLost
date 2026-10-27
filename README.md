@@ -17,7 +17,7 @@ npm ci
 npm run dev
 ```
 
-Open **http://localhost:5173**. Choose **Start training**, launch the rescue, and press **Request simulated intel** to try a full mission without Twitch credentials. Open the crew link in a second browser for the asymmetric experience.
+Open **http://localhost:5173**. Choose **Start training**, launch the rescue, and press **Request simulated intel** for guidance. In the final approach, hold A/D to reach the suggested lane and engage the tractor. **Simulate crew boost** tests the chat power-cell effect. Open the crew link in a second browser for the asymmetric experience.
 
 ## Play
 
@@ -70,7 +70,7 @@ If you keep the repository private, the hackathon rules require sharing it with 
 
 ## OBS
 
-Capture the cockpit browser window, or copy **Stream setup → Copy OBS overlay URL** into a Browser Source at **1920 × 1080**. The overlay has a transparent background and shows the objective, countdown, hull, room link, and latest crew signal. Keep viewer intel off stream.
+Capture the cockpit browser window and toggle **Broadcast layout** for larger, stream-readable text. Alternatively, copy **Stream setup → Copy OBS overlay URL** into a Browser Source at **1920 × 1080**. The transparent overlay shows the objective, countdown, hull, crew link, latest signal, and extraction progress. Keep viewer intel off stream.
 
 ## Production
 
@@ -94,7 +94,7 @@ npm run test:e2e
 
 Browser tests start a production server on port 4317 to avoid conflicting with normal development. Twitch protocol tests use fixtures; a live broadcaster session must be verified with your own Twitch app before submission.
 
-The expanded game passes **40 local automated tests**, including complete Cadet and Commander keyboard playthroughs, mobile pointer release, uniquely solvable puzzles, limited boosts, and disconnect safety. The initial release also passed a production Docker build/startup check in [GitHub CI](https://github.com/arnavgupta2004/SignalLost/actions/runs/40521582904). The expanded version's CI verification is tracked in the [validation record](docs/VALIDATION.md).
+The expanded game passes **41 local automated tests**, including complete Cadet and Commander keyboard playthroughs, mobile pointer release, uniquely solvable puzzles, limited boosts, and disconnect safety. The initial release also passed a production Docker build/startup check in [GitHub CI](https://github.com/arnavgupta2004/SignalLost/actions/runs/40521582904). The expanded version's CI verification is tracked in the [validation record](docs/VALIDATION.md).
 
 `npm run format:check` and `npm run check:portability` keep the source reviewable and dependency installation portable.
 

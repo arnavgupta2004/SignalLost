@@ -61,7 +61,7 @@ Only recognized commands are shown in the game. Ordinary conversation is ignored
 
 ## OBS and recording
 
-- Capture the cockpit browser window for the complete interface.
+- Capture the cockpit browser window for the complete interface. Toggle **Broadcast layout** for larger timer, crew signals, and controls at desktop/OBS resolutions.
 - For a transparent HUD, add the overlay URL as a Browser Source at **1920 × 1080**.
 - Keep crew intel out of the broadcast; viewers should discover it through the shared link.
 - To show the asymmetric mechanic in your demonstration video, briefly cut to the crew panel, then return to the cockpit.
@@ -70,5 +70,7 @@ Only recognized commands are shown in the game. Ordinary conversation is ignored
 ## Current validation limits
 
 Automated tests cover the full training mission, client permissions, HTTP parsing, state isolation, and Twitch protocol behavior using fixtures. **A live broadcaster OAuth/EventSub session and a public deployment still require the entrant's accounts and must be verified before submission.** Training footage alone does not satisfy the rule requiring footage functioning on Twitch.
+
+Live missions wait for a connected Twitch uplink before launch. During the rehearsal, verify `!dock` and a real viewer's `!boost`, including the credited power-cell signal, stabilization countdown, and recovery progress.
 
 The production Docker image has been built and smoke-tested successfully in GitHub CI, including health and frontend responses. Verify the environment configuration and live Twitch connection on your selected public host before recording.

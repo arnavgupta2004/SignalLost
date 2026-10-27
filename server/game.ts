@@ -33,11 +33,14 @@ function shuffled<T>(values: T[]): T[] {
   }
   return result;
 }
-export function makeIntel(): Intel {
+export function makeIntel(difficulty: Difficulty = 'cadet'): Intel {
   const safeSector = SECTORS[randomInt(SECTORS.length)];
   const wiring = shuffled([0, 1, 2, 3]);
   const relayTarget = RELAYS.map((_, i) => i === wiring[1] || i === wiring[3]);
-  const code = Array.from({ length: 4 }, () => GLYPHS[randomInt(GLYPHS.length)]);
+  const code =
+    difficulty === 'commander'
+      ? shuffled([...GLYPHS])
+      : Array.from({ length: 4 }, () => GLYPHS[randomInt(GLYPHS.length)]);
   const clues = {
     SUN: [
       'The star that gives our home its daylight.',
@@ -109,7 +112,11 @@ export function createRoom(
 ): Room {
   const roomId = randomBytes(4).toString('hex').slice(0, 6).toUpperCase();
   const durationMs = difficulty === 'cadet' ? MISSION_DURATION : 5 * 60_000;
-  const intel = makeIntel();
+  const intel = makeIntel(difficulty);
+  const decoderOrder = difficulty === 'cadet' ? [0, 1, 2, 3] : shuffled([0, 1, 2, 3]);
+  if (difficulty === 'commander' && decoderOrder.every((value, index) => value === index)) {
+    [decoderOrder[0], decoderOrder[1]] = [decoderOrder[1], decoderOrder[0]];
+  }
   return {
     hostToken: randomBytes(32).toString('hex'),
     intel,
@@ -134,7 +141,7 @@ export function createRoom(
       strikes: 0,
       relays: [false, false, false, false],
       enteredCode: [],
-      decoderOrder: difficulty === 'cadet' ? [0, 1, 2, 3] : shuffled([0, 1, 2, 3]),
+      decoderOrder,
       navigationLimits: intel.navigation,
       docking: {
         position: 0,
@@ -314,6 +321,15 @@ export function hostAction(room: Room, action: HostAction, now = Date.now()): bo
     return true;
   }
   if (action.type === 'start' && s.phase === 'lobby') {
+    if (s.mode === 'twitch' && s.twitch.status !== 'connected') {
+      feedback(
+        room,
+        'info',
+        'Connect Twitch before launching this live mission. Training flights work without credentials.',
+        now,
+      );
+      return true;
+    }
     s.phase = 'active';
     s.startedAt = now;
     room.lastTick = now;
