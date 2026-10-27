@@ -87,6 +87,7 @@ For Twitch setup, follow the README and `docs/DEPLOYMENT.md`. No runtime OpenAI 
 - [ ] Confirm entrant eligibility and any team members' eligibility.
 - [ ] Register on the hackathon's Devpost page.
 - [ ] Include this repository URL and keep source, assets, and run instructions accessible.
+- [ ] If the repository remains private, share it with **testing@devpost.com** for judging and testing, as required by the rules.
 - [ ] Include the text description and actual Codex session ID above.
 - [ ] Upload an English demonstration to **publicly visible YouTube**.
 - [ ] Show the application functioning on Twitch and show how it was built with Codex.

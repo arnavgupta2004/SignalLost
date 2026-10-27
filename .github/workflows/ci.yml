@@ -19,6 +19,13 @@ jobs:
       - run: npm run check
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - name: Validate production Docker image
+        run: |
+          docker build --tag signallost:ci .
+          docker run --detach --name signallost-ci --publish 127.0.0.1:4318:3001 --env APP_URL=http://localhost:4318 signallost:ci
+          trap 'docker rm -f signallost-ci' EXIT
+          curl --fail --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:4318/api/health
+          curl --fail --silent --output /dev/null http://127.0.0.1:4318/
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

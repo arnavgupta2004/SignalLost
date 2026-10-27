@@ -59,6 +59,8 @@ Uses Twitch OAuth authorization-code flow and EventSub WebSockets for `channel.c
 
 [Deployment guide](docs/DEPLOYMENT.md) · [Devpost draft](docs/SUBMISSION.md) · [Demonstration script](docs/DEMO_SCRIPT.md)
 
+If you keep the repository private, the hackathon rules require sharing it with **testing@devpost.com** on GitHub or GitLab. Confirm judge access before submitting.
+
 ## OBS
 
 Capture the cockpit browser window, or copy **Stream setup → Copy OBS overlay URL** into a Browser Source at **1920 × 1080**. The overlay has a transparent background and shows the objective, countdown, hull, room link, and latest crew signal. Keep viewer intel off stream.
