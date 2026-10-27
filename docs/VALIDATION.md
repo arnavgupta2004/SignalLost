@@ -4,19 +4,19 @@ Validated on October 27, 2026 locally using Windows, Node.js 24.19.0, and Playwr
 
 The complete final application run passed: [GitHub CI run 40521582904](https://github.com/arnavgupta2004/SignalLost/actions/runs/40521582904), application commit `bcc77c09279c05aedb3639e6513755f429613dd2`.
 
-| Check | Result |
-| --- | --- |
-| TypeScript type checking | Passed |
-| Vite production build | Passed |
-| Mission-engine tests | 12 passed |
-| Twitch OAuth/EventSub fixture tests | 5 passed |
-| Browser integration tests | 11 passed |
-| Public-registry dependency audits | 0 reported vulnerabilities in CI, including production-only dependencies |
-| Clean production-only installation | Startup, frontend serving, and room creation passed |
-| Production Docker image build | Passed in GitHub CI |
-| Production container health and frontend | Passed in GitHub CI |
-| Rendered interface inspection | Homepage, cockpit, and crew panel checked |
-| Original application screenshots | Captured in `docs/images/` |
+| Check                                    | Result                                                                   |
+| ---------------------------------------- | ------------------------------------------------------------------------ |
+| TypeScript type checking                 | Passed                                                                   |
+| Vite production build                    | Passed                                                                   |
+| Mission-engine tests                     | 12 passed                                                                |
+| Twitch OAuth/EventSub fixture tests      | 5 passed                                                                 |
+| Browser integration tests                | 11 passed                                                                |
+| Public-registry dependency audits        | 0 reported vulnerabilities in CI, including production-only dependencies |
+| Clean production-only installation       | Startup, frontend serving, and room creation passed                      |
+| Production Docker image build            | Passed in GitHub CI                                                      |
+| Production container health and frontend | Passed in GitHub CI                                                      |
+| Rendered interface inspection            | Homepage, cockpit, and crew panel checked                                |
+| Original application screenshots         | Captured in `docs/images/`                                               |
 
 Browser tests verify a complete rescue synchronizes across cockpit, viewer intel, and OBS. They also cover simulated crew labels and readback, pilot authorization, pause and reload, damage and restart, unknown rooms, OAuth state rejection, mobile overflow, transparent overlays, bounded request bodies, protected Twitch management, and keyboard focus while joining a crew by room code.
 

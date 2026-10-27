@@ -4,10 +4,16 @@ import { chromium } from '@playwright/test';
 const base = process.env.CAPTURE_URL || 'http://127.0.0.1:4317';
 await mkdir('docs/images', { recursive: true });
 const browser = await chromium.launch();
-const context = await browser.newContext({ viewport: { width: 1440, height: 1080 }, reducedMotion: 'reduce' });
+const context = await browser.newContext({
+  viewport: { width: 1440, height: 1080 },
+  reducedMotion: 'reduce',
+});
 const page = await context.newPage();
 async function shot(target, name, fullPage = false) {
-  await target.evaluate(async () => { await document.fonts.ready; window.scrollTo(0, 0); });
+  await target.evaluate(async () => {
+    await document.fonts.ready;
+    window.scrollTo(0, 0);
+  });
   await target.screenshot({ path: `docs/images/${name}.png`, fullPage });
 }
 try {
@@ -36,4 +42,6 @@ try {
   await overlay.locator('.obs-overlay').waitFor();
   await overlay.screenshot({ path: 'docs/images/overlay.png', omitBackground: true });
   console.log('Captured original application screenshots in docs/images/.');
-} finally { await browser.close(); }
+} finally {
+  await browser.close();
+}

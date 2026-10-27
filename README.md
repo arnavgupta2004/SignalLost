@@ -22,26 +22,33 @@ Open **http://localhost:5173**. Choose **Start training**, launch the rescue, an
 ## Play
 
 1. The streamer shares the room’s **crew intel link** and captures the cockpit in OBS.
-2. Viewers identify a safe corridor, the required power relays, and a four-symbol distress handshake. The cockpit does **not** receive these solutions.
-3. Viewers send findings through Twitch chat. The streamer chooses the route, operates relays, and transmits the code.
-4. Rescue all six survivors before the six-minute oxygen window closes. Mistakes cost 20% hull and 20 seconds. The debrief credits the crew.
+2. Viewers identify a safe corridor, solve emergency wiring, and decode distress bands. In Commander, the pilot holds the flight limits and transmission order; both sides must combine their information.
+3. Viewers send findings through Twitch chat. The streamer chooses the route, operates relays, and transmits the handshake.
+4. The pilot steers the final approach with **A/D or arrow keys**, engages the tractor, and holds the safe lane. A wrong approach heats the beam.
+5. Viewers send **`!boost`** to deliver a power cell: six seconds without drift and help for an aligned beam. Three cells per mission, one per viewer.
+6. Recover all six named survivors before oxygen runs out. Mistakes cost 20% hull and 20 seconds. The debrief credits the crew and includes the flight recorder.
+
+**Cadet** gives a six-minute guided flight with a calm approach. **Commander** gives five minutes, measured navigation scans, a logical relay schematic, labeled symbol bands, and ion drift during extraction. Training supports both profiles without credentials.
 
 The **crew readback** counts each viewer's latest finding once, so the pilot sees community agreement without spam inflating it. Findings reset for each system.
 
 Viewer commands:
 
-| Command | Effect |
-| --- | --- |
-| `!join nav` | Join navigation |
-| `!join engineer` | Join engineering |
-| `!join decoder` | Join signal decoding |
-| `!nav VEGA` | Send navigation guidance |
-| `!power A C ON, others OFF` | Send power guidance |
-| `!code SUN WAVE STAR MOON` | Send decoded symbols |
-| `!ping your message` | Send a general signal |
-| `!help` | Display command guidance in the cockpit |
+| Command                            | Effect                                           |
+| ---------------------------------- | ------------------------------------------------ |
+| `!join nav`                        | Join navigation                                  |
+| `!join engineer`                   | Join engineering                                 |
+| `!join decoder`                    | Join signal decoding                             |
+| `!nav VEGA`                        | Send navigation guidance                         |
+| `!power A C ON, others OFF`        | Send power guidance                              |
+| `!code SUN WAVE STAR MOON`         | Send decoded symbols                             |
+| `!code A:SUN B:WAVE C:STAR D:MOON` | Send labeled band meanings for Commander         |
+| `!dock 3`                          | Guide the final approach lane                    |
+| `!boost`                           | Deliver a community power cell during extraction |
+| `!ping your message`               | Send a general signal                            |
+| `!help`                            | Display command guidance in the cockpit          |
 
-Commands inform the pilot; they never directly operate the cockpit. A 1.5-second cooldown limits each viewer’s signals. Normal conversation is ignored.
+Finding commands inform the pilot; they never steer or operate cockpit switches. `!boost` directly stabilizes the final approach within its limited cell budget. A 1.5-second cooldown limits each viewer’s signals. Normal conversation is ignored.
 
 ## Connect Twitch
 
@@ -87,7 +94,9 @@ npm run test:e2e
 
 Browser tests start a production server on port 4317 to avoid conflicting with normal development. Twitch protocol tests use fixtures; a live broadcaster session must be verified with your own Twitch app before submission.
 
-The final application passed **28 tests** and a production Docker build/startup check in [GitHub CI](https://github.com/arnavgupta2004/SignalLost/actions/runs/40521582904). Public-registry audits reported zero vulnerabilities. See the [validation record](docs/VALIDATION.md).
+The expanded game passes **40 local automated tests**, including complete Cadet and Commander keyboard playthroughs, mobile pointer release, uniquely solvable puzzles, limited boosts, and disconnect safety. The initial release also passed a production Docker build/startup check in [GitHub CI](https://github.com/arnavgupta2004/SignalLost/actions/runs/40521582904). The expanded version's CI verification is tracked in the [validation record](docs/VALIDATION.md).
+
+`npm run format:check` and `npm run check:portability` keep the source reviewable and dependency installation portable.
 
 ## Architecture
 
