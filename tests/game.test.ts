@@ -123,3 +123,14 @@ test('signal log and crew manifest stay bounded under heavy participation', () =
   assert.equal(room.state.signals.length, 30);
   assert.equal(room.state.stats.messages, 300);
 });
+test('crew readback counts distinct voices, replaces changed findings, and clears for the next system', () => {
+  const room = started('twitch');
+  receiveChat(room, '1', 'Ada', '!nav VEGA', 'twitch', now);
+  receiveChat(room, '2', 'Lin', '!nav VEGA', 'twitch', now);
+  receiveChat(room, '3', 'Kai', '!nav ORION', 'twitch', now);
+  assert.deepEqual(room.state.findings[0], { label: 'VEGA', votes: 2, total: 3 });
+  receiveChat(room, '1', 'Ada', '!nav ORION', 'twitch', now + 2000);
+  assert.deepEqual(room.state.findings[0], { label: 'ORION', votes: 2, total: 3 });
+  hostAction(room, { type: 'route', sector: room.intel.safeSector }, now + 3000);
+  assert.deepEqual(room.state.findings, []);
+});

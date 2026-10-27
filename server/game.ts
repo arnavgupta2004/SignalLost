@@ -9,10 +9,15 @@ export interface Room {
   lastTick: number;
   lastActive: number;
   chatCooldowns: Map<string, number>;
+  votes: Map<string, string>;
 }
 export function makeIntel(): Intel {
   const safeSector = SECTORS[randomInt(SECTORS.length)];
-  const relayTarget = [true, false, true, false].sort(() => randomInt(2) ? 1 : -1);
+  const relayTarget = [true, false, true, false];
+  for (let i = relayTarget.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1);
+    [relayTarget[i], relayTarget[j]] = [relayTarget[j], relayTarget[i]];
+  }
   const code = Array.from({ length: 4 }, () => GLYPHS[randomInt(GLYPHS.length)]);
   const clues = {
     SUN: 'The star that gives our home its daylight.',
@@ -40,11 +45,12 @@ export function createRoom(mode: 'training' | 'twitch', configured = false, now 
     lastTick: now,
     lastActive: now,
     chatCooldowns: new Map(),
+    votes: new Map(),
     state: {
       roomId, missionName: 'The last light', mode, phase: 'lobby', stage: 0,
       oxygen: 100, integrity: 100, remainingMs: MISSION_DURATION, durationMs: MISSION_DURATION,
       startedAt: null, paused: false, strikes: 0, relays: [false, false, false, false],
-      enteredCode: [], crew: [], signals: [], feedback: null, viewers: 0,
+      enteredCode: [], crew: [], signals: [], findings: [], feedback: null, viewers: 0,
       twitch: { status: 'offline', channel: null, error: null, configured },
       stats: { actions: 0, messages: 0, timeUsedMs: 0 }, debrief: null,
     },
@@ -105,6 +111,7 @@ export function hostAction(room: Room, action: HostAction, now = Date.now()): bo
     room.intel = fresh.intel;
     room.state = { ...fresh.state, roomId: s.roomId, twitch, viewers };
     room.chatCooldowns.clear();
+    room.votes.clear();
     room.lastTick = now;
     return true;
   }
@@ -136,6 +143,7 @@ export function hostAction(room: Room, action: HostAction, now = Date.now()): bo
     if (action.sector !== room.intel.safeSector) strike(room, 'Unsafe corridor. Emergency evasive maneuver.', now);
     else {
       s.stage = 1;
+      room.votes.clear(); s.findings = [];
       feedback(room, 'success', 'Safe corridor locked. Now restore power to the rescue airlock.', now);
     }
     return true;
@@ -148,6 +156,7 @@ export function hostAction(room: Room, action: HostAction, now = Date.now()): bo
     if (!s.relays.every((on, i) => on === room.intel.relayTarget[i])) strike(room, 'Power configuration rejected. Ask engineering to check every relay.', now);
     else {
       s.stage = 2;
+      room.votes.clear(); s.findings = [];
       feedback(room, 'success', 'Airlock powered. Decode the four-symbol distress handshake.', now);
     }
     return true;
@@ -194,6 +203,24 @@ export function receiveChat(
   };
   room.state.signals = [...room.state.signals.slice(-29), signal];
   room.state.stats.messages++;
+  // Read back actual crew guidance, one latest finding per viewer. No solutions are inferred.
+  let finding: string | null = null;
+  if (room.state.stage === 0 && command === 'nav') {
+    const sector = arg.toUpperCase().split(/[\s,]+/)[0];
+    if (SECTORS.some(s => s === sector)) finding = sector;
+  } else if (room.state.stage === 1 && command === 'power') {
+    const relays = [...new Set(arg.toUpperCase().match(/\b[A-D]\b/g) || [])].sort();
+    if (relays.length) finding = `${relays.join(' + ')} ON`;
+  } else if (room.state.stage === 2 && command === 'code') {
+    const symbols = arg.toUpperCase().split(/[\s,→]+/).filter(word => GLYPHS.some(g => g === word)).slice(0, 4);
+    if (symbols.length === 4) finding = symbols.join(' → ');
+  }
+  if (finding && (room.votes.has(id) || room.votes.size < 200)) {
+    room.votes.set(id, finding);
+    const counts = new Map<string, number>();
+    for (const value of room.votes.values()) counts.set(value, (counts.get(value) || 0) + 1);
+    room.state.findings = [...counts].map(([label, votes]) => ({ label, votes, total: room.votes.size })).sort((a, b) => b.votes - a.votes);
+  }
   room.lastActive = now;
   return true;
 }

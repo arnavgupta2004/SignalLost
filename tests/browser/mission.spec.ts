@@ -35,8 +35,6 @@ async function solve(page: Page, roomId: string) {
   for (let i = 0; i < intel.code.length; i++) {
     await page.getByRole('button', { name: intel.code[i], exact: true }).click();
     await expect(page.locator('.code-slot.filled')).toHaveCount(i + 1);
-    // Each new command must pass the deliberate 80ms server input throttle.
-    await page.waitForTimeout(100);
   }
   await page.getByRole('button', { name: 'Transmit rescue code' }).click();
   await expect(page.getByRole('heading', { name: 'You brought them home.' })).toBeVisible();
@@ -66,6 +64,8 @@ test('training intel is labeled, enlists crew and guides the pilot', async ({ pa
   await expect(page.locator('.signal-source').first()).toHaveText('SIM');
   await expect(page.locator('.signal-item').first()).toContainText('!nav');
   await expect(page.locator('.crew-names')).toContainText('Echo_Nav');
+  await expect(page.locator('.readback-findings .leading strong')).toHaveText(/KESTREL|ORION|VEGA/);
+  await expect(page.locator('.readback-findings .leading span')).toHaveText('1/1');
 });
 test('viewer cannot operate the cockpit and host token is required', async ({ page }) => {
   const id = await create(page);
@@ -89,7 +89,7 @@ test('viewer cannot operate the cockpit and host token is required', async ({ pa
   expect(data.hasIntel).toBe(true);
   const stranger = await page.context().browser()!.newContext();
   const strangerPage = await stranger.newPage();
-  await strangerPage.goto(`http://localhost:3001/host/${id}`);
+  await strangerPage.goto(`http://127.0.0.1:4317/host/${id}`);
   await expect(strangerPage.getByText('Pilot access is saved in the browser', { exact: false })).toBeVisible();
   await stranger.close();
 });
@@ -150,4 +150,21 @@ test('OBS background is transparent and excludes viewer-only intel', async ({ pa
   expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
   await expect(page.getByText('VIEWERS ONLY')).toHaveCount(0);
   await expect(page.getByText('CLEAR CORRIDOR')).toHaveCount(0);
+});
+test('HTTP parser rejects compressed, oversized and malformed JSON without crashing', async ({ request }) => {
+  const compressed = await request.post('/api/rooms', { headers: { 'Content-Type': 'application/json', 'Content-Encoding': 'gzip' }, data: '{}' });
+  expect(compressed.status()).toBe(415);
+  const oversized = await request.post('/api/rooms', { data: { text: 'x'.repeat(5000) } });
+  expect(oversized.status()).toBe(413);
+  const malformed = await request.post('/api/rooms', { headers: { 'Content-Type': 'application/json' }, data: '{invalid' });
+  expect(malformed.status()).toBe(400);
+  expect((await request.get('/api/health')).ok()).toBe(true);
+});
+test('Twitch connection management rejects callers without pilot authorization', async ({ page, request }) => {
+  const id = await create(page);
+  const response = await request.post(`/api/rooms/${id}/twitch`, { data: {} });
+  expect(response.status()).toBe(403);
+  const info = await (await request.get(`/api/rooms/${id}`)).json();
+  expect(info.hostToken).toBeUndefined();
+  expect(info.intel).toBeUndefined();
 });

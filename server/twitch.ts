@@ -42,7 +42,11 @@ export class TwitchConnection {
   private stopped = false;
   private attempts = 0;
   private seen = new Set<string>();
-  constructor(private config: TwitchConfig, private tokens: TwitchTokens, private identity: TwitchIdentity, private hooks: TwitchHooks) {}
+  private keepaliveSeconds = 10;
+  constructor(
+    private config: TwitchConfig, private tokens: TwitchTokens, private identity: TwitchIdentity, private hooks: TwitchHooks,
+    private socketFactory: (url: string) => WebSocket = url => new WebSocket(url),
+  ) {}
   start() {
     this.stopped = false;
     this.scheduleRefresh();
@@ -63,6 +67,7 @@ export class TwitchConnection {
     this.socket?.close();
     this.socket = null;
     this.seen.clear();
+    this.tokens = { access_token: '', refresh_token: '', expires_in: 0 };
   }
   private scheduleRefresh() {
     if (this.refreshTimer) clearTimeout(this.refreshTimer);
@@ -84,6 +89,7 @@ export class TwitchConnection {
       this.tokens = tokens;
       this.scheduleRefresh();
     } catch {
+      if (this.stopped) return;
       this.stop(); this.hooks.status('error', 'Twitch authorization expired. Connect your channel again.');
     }
   }
@@ -95,7 +101,7 @@ export class TwitchConnection {
     if (this.stopped) return;
     this.hooks.status(reconnectUrl || this.attempts > 0 ? 'reconnecting' : 'connecting');
     const previous = this.socket;
-    const socket = new WebSocket(reconnectUrl ?? 'wss://eventsub.wss.twitch.tv/ws');
+    const socket = this.socketFactory(reconnectUrl ?? 'wss://eventsub.wss.twitch.tv/ws');
     this.socket = socket;
     this.armWatchdog();
     socket.on('message', data => {
@@ -104,7 +110,8 @@ export class TwitchConnection {
         const event = JSON.parse(data.toString());
         const type = event.metadata?.message_type;
         const messageId: string | undefined = event.metadata?.message_id;
-        this.armWatchdog(event.payload?.session?.keepalive_timeout_seconds ?? 10);
+        this.keepaliveSeconds = event.payload?.session?.keepalive_timeout_seconds ?? this.keepaliveSeconds;
+        this.armWatchdog(this.keepaliveSeconds);
         if (type === 'session_welcome') {
           this.attempts = 0;
           if (reconnectUrl) {
@@ -158,6 +165,7 @@ export class TwitchConnection {
       if (!response.ok) throw new Error(response.status === 401 || response.status === 403 ? 'Twitch chat permission was denied. Reconnect your channel.' : 'Could not subscribe to Twitch chat. Try connecting again.');
       this.hooks.status('connected');
     } catch (error) {
+      if (this.stopped) return;
       this.stop();
       this.hooks.status('error', error instanceof Error ? error.message : 'Twitch connection failed.');
     }

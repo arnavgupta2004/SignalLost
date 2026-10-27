@@ -1,12 +1,12 @@
 import { existsSync } from 'node:fs';
-import { createServer } from 'node:http';
+import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import express, { type Request } from 'express';
 import { WebSocketServer, WebSocket } from 'ws';
 import { createRoom, hostAction, projectState, receiveChat, tick, type Room } from './game.ts';
 import { exchangeCode, validateToken, TwitchConnection, type TwitchConfig } from './twitch.ts';
+import { json, text, parseJson, serveStatic, RequestError } from './http.ts';
 import type { ClientMessage, HostAction, Role, ServerMessage } from '../shared/protocol.ts';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -14,8 +14,7 @@ if (existsSync(path.join(projectRoot, '.env'))) process.loadEnvFile(path.join(pr
 const port = Number(process.env.PORT || 3001);
 const appUrl = (process.env.APP_URL || `http://localhost:${port}`).replace(/\/$/, '');
 const config: TwitchConfig = {
-  clientId: process.env.TWITCH_CLIENT_ID || '',
-  clientSecret: process.env.TWITCH_CLIENT_SECRET || '',
+  clientId: process.env.TWITCH_CLIENT_ID || '', clientSecret: process.env.TWITCH_CLIENT_SECRET || '',
   redirectUri: process.env.TWITCH_REDIRECT_URI || `http://localhost:${port}/auth/twitch/callback`,
 };
 const configured = Boolean(config.clientId && config.clientSecret);
@@ -23,144 +22,108 @@ const rooms = new Map<string, Room>();
 const connections = new Map<string, TwitchConnection>();
 const oauthStates = new Map<string, { roomId: string; cookie: string; expires: number }>();
 const ipRequests = new Map<string, { count: number; expires: number }>();
-interface Client { roomId: string; role: Role; alive: boolean; lastAction: number }
+interface Client { roomId: string; role: Role; alive: boolean; actionWindow: number; actionCount: number }
 const clients = new Map<WebSocket, Client>();
-const app = express();
-app.disable('x-powered-by');
-app.use(express.json({ limit: '4kb' }));
-app.use((_req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('Referrer-Policy', 'no-referrer');
-  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-  next();
-});
 const allowedOrigins = new Set([new URL(appUrl).origin, `http://localhost:${port}`, 'http://localhost:5173', 'http://127.0.0.1:5173']);
-function originAllowed(req: Request) {
+const dist = path.join(projectRoot, 'dist');
+function originAllowed(req: IncomingMessage) {
   const origin = req.headers.origin;
-  return !origin || allowedOrigins.has(origin) || origin === `${req.protocol}://${req.headers.host}`;
+  return !origin || allowedOrigins.has(origin) || origin === `http://${req.headers.host}` || origin === `https://${req.headers.host}`;
 }
-app.use('/api', (req, res, next) => {
-  res.setHeader('Cache-Control', 'no-store');
-  if (!originAllowed(req)) { res.status(403).json({ error: 'Origin not allowed.' }); return; }
-  next();
-});
 function secureEqual(a: string, b: string) {
-  const left = Buffer.from(a); const right = Buffer.from(b);
+  const left = Buffer.from(a), right = Buffer.from(b);
   return left.length === right.length && timingSafeEqual(left, right);
 }
-function authorized(req: Request, room: Room) {
-  const token = req.headers.authorization?.replace(/^Bearer /, '') || '';
-  return secureEqual(token, room.hostToken);
+function authorized(req: IncomingMessage, room: Room) {
+  return secureEqual(req.headers.authorization?.replace(/^Bearer /, '') || '', room.hostToken);
 }
 function send(socket: WebSocket, message: ServerMessage) {
   if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message));
 }
 function broadcast(room: Room) {
-  const viewers = [...clients.values()].filter(c => c.roomId === room.state.roomId && c.role === 'viewer').length;
-  room.state.viewers = viewers;
-  for (const [socket, client] of clients) if (client.roomId === room.state.roomId) {
-    send(socket, { type: 'state', state: projectState(room, client.role) });
-  }
+  room.state.viewers = [...clients.values()].filter(c => c.roomId === room.state.roomId && c.role === 'viewer').length;
+  for (const [socket, client] of clients) if (client.roomId === room.state.roomId) send(socket, { type: 'state', state: projectState(room, client.role) });
 }
-app.get('/api/health', (_req, res) => res.json({ ok: true, twitchConfigured: configured }));
-app.post('/api/rooms', (req, res) => {
-  const ip = req.socket.remoteAddress || 'unknown';
-  const now = Date.now();
-  const rate = ipRequests.get(ip);
-  if (rate && rate.expires > now && rate.count >= 15) { res.status(429).json({ error: 'Too many rescue rooms. Please wait a minute.' }); return; }
-  ipRequests.set(ip, { count: rate && rate.expires > now ? rate.count + 1 : 1, expires: rate && rate.expires > now ? rate.expires : now + 60_000 });
-  if (rooms.size >= 200) { res.status(503).json({ error: 'Mission control is full. Try again soon.' }); return; }
-  const mode = req.body?.mode === 'twitch' ? 'twitch' : 'training';
-  let room = createRoom(mode, configured);
-  while (rooms.has(room.state.roomId)) room = createRoom(mode, configured);
-  rooms.set(room.state.roomId, room);
-  res.status(201).json({ roomId: room.state.roomId, hostToken: room.hostToken });
-});
-app.get('/api/rooms/:id', (req, res) => {
-  const room = rooms.get(req.params.id.toUpperCase());
-  if (!room) { res.status(404).json({ error: 'This rescue room does not exist or has expired.' }); return; }
-  res.json({ roomId: room.state.roomId, phase: room.state.phase, mode: room.state.mode });
-});
-app.post('/api/rooms/:id/twitch', (req, res) => {
-  const room = rooms.get(req.params.id.toUpperCase());
-  if (!room || !authorized(req, room)) { res.status(403).json({ error: 'Only the pilot can connect Twitch.' }); return; }
-  if (!configured) { res.status(400).json({ error: 'Set TWITCH_CLIENT_ID and TWITCH_CLIENT_SECRET in your server .env, then restart. Training mode is ready now.' }); return; }
-  const state = randomBytes(24).toString('hex');
-  const cookie = randomBytes(24).toString('hex');
-  oauthStates.set(state, { roomId: room.state.roomId, cookie, expires: Date.now() + 10 * 60_000 });
-  res.cookie('signallost_oauth', cookie, {
-    httpOnly: true, sameSite: 'lax', secure: config.redirectUri.startsWith('https:'),
-    maxAge: 10 * 60_000, path: '/auth/twitch/callback',
-  });
-  const url = new URL('https://id.twitch.tv/oauth2/authorize');
-  url.search = new URLSearchParams({
-    client_id: config.clientId, redirect_uri: config.redirectUri,
-    response_type: 'code', scope: 'user:read:chat', state, force_verify: 'true',
-  }).toString();
-  res.json({ url: url.toString() });
-});
-app.post('/api/rooms/:id/twitch/disconnect', (req, res) => {
-  const room = rooms.get(req.params.id.toUpperCase());
-  if (!room || !authorized(req, room)) { res.status(403).json({ error: 'Only the pilot can disconnect Twitch.' }); return; }
-  connections.get(room.state.roomId)?.stop(); connections.delete(room.state.roomId);
-  room.state.twitch = { status: 'offline', channel: null, error: null, configured };
-  broadcast(room); res.json({ ok: true });
-});
-app.get('/auth/twitch/callback', async (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
-  const state = typeof req.query.state === 'string' ? req.query.state : '';
-  const pending = oauthStates.get(state);
+async function callback(req: IncomingMessage, res: ServerResponse, url: URL) {
+  const state = url.searchParams.get('state') || '', pending = oauthStates.get(state);
   const cookie = (req.headers.cookie || '').split(';').map(v => v.trim()).find(v => v.startsWith('signallost_oauth='))?.slice('signallost_oauth='.length) || '';
   oauthStates.delete(state);
-  res.clearCookie('signallost_oauth', { path: '/auth/twitch/callback' });
-  if (!pending || pending.expires < Date.now() || !secureEqual(cookie, pending.cookie)) {
-    res.status(400).send('Authorization session expired or invalid. Return to SignalLost and connect again.'); return;
-  }
+  res.setHeader('Set-Cookie', 'signallost_oauth=; Path=/auth/twitch/callback; HttpOnly; SameSite=Lax; Max-Age=0');
+  if (!pending || pending.expires < Date.now() || !secureEqual(cookie, pending.cookie)) { text(res, 400, 'Authorization session expired or invalid. Return to SignalLost and connect again.'); return; }
   const room = rooms.get(pending.roomId);
-  if (!room) { res.status(404).send('Rescue room expired. Create a new mission.'); return; }
+  if (!room) { text(res, 404, 'Rescue room expired. Create a new mission.'); return; }
   try {
-    if (req.query.error || typeof req.query.code !== 'string') throw new Error('Twitch connection cancelled. You can try again from the cockpit.');
-    const tokens = await exchangeCode(config, req.query.code);
+    const code = url.searchParams.get('code');
+    if (url.searchParams.has('error') || !code) throw new Error('Twitch connection cancelled. You can try again from the cockpit.');
+    const tokens = await exchangeCode(config, code);
     const identity = await validateToken(config, tokens.access_token);
-    // A channel is bound to one rescue room, so messages cannot leak across missions.
     for (const [id, other] of rooms) if (id !== pending.roomId && other.state.twitch.channel === identity.login) {
       connections.get(id)?.stop(); connections.delete(id);
-      other.state.twitch = { status: 'offline', channel: null, error: 'This channel connected to another rescue room.', configured };
-      broadcast(other);
+      other.state.twitch = { status: 'offline', channel: null, error: 'This channel connected to another rescue room.', configured }; broadcast(other);
     }
     connections.get(pending.roomId)?.stop();
-    room.state.mode = 'twitch';
-    room.state.twitch.channel = identity.login;
-    room.state.twitch.error = null;
+    room.state.mode = 'twitch'; room.state.twitch.channel = identity.login; room.state.twitch.error = null;
     const connection = new TwitchConnection(config, tokens, identity, {
-      status: (status, error) => {
-        room.state.twitch.status = status; room.state.twitch.error = error || null; broadcast(room);
-      },
-      chat: (id, name, text) => { if (receiveChat(room, id, name, text, 'twitch')) broadcast(room); },
+      status: (status, error) => { room.state.twitch.status = status; room.state.twitch.error = error || null; broadcast(room); },
+      chat: (id, name, message) => { if (receiveChat(room, id, name, message, 'twitch')) broadcast(room); },
     });
-    connections.set(pending.roomId, connection);
-    connection.start();
-  } catch (error) {
-    room.state.twitch.status = 'error';
-    room.state.twitch.error = error instanceof Error ? error.message : 'Unable to connect Twitch.';
-    broadcast(room);
-  }
-  res.redirect(`${appUrl}/host/${room.state.roomId}`);
-});
-const dist = path.join(projectRoot, 'dist');
-if (existsSync(dist)) {
-  app.use(express.static(dist));
-  app.get('/{*path}', (req, res) => {
-    if (req.path.startsWith('/api/') || req.path.startsWith('/auth/')) { res.status(404).json({ error: 'Not found.' }); return; }
-    res.sendFile(path.join(dist, 'index.html'));
-  });
+    connections.set(pending.roomId, connection); connection.start();
+  } catch (error) { room.state.twitch.status = 'error'; room.state.twitch.error = error instanceof Error ? error.message : 'Unable to connect Twitch.'; broadcast(room); }
+  res.writeHead(302, { Location: `${appUrl}/host/${room.state.roomId}`, 'Cache-Control': 'no-store' }); res.end();
 }
-app.use((error: Error, _req: Request, res: express.Response, _next: express.NextFunction) => {
-  if (error instanceof SyntaxError) { res.status(400).json({ error: 'Invalid request.' }); return; }
-  console.error('Request failed:', error.name);
-  res.status(500).json({ error: 'Mission control encountered a problem. Try again.' });
+async function handle(req: IncomingMessage, res: ServerResponse) {
+  res.setHeader('X-Content-Type-Options', 'nosniff'); res.setHeader('Referrer-Policy', 'no-referrer'); res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  const url = new URL(req.url || '/', 'http://signallost.local'), method = req.method || 'GET';
+  if (url.pathname.startsWith('/api/') && !originAllowed(req)) { json(res, 403, { error: 'Origin not allowed.' }); return; }
+  if (method === 'GET' && url.pathname === '/api/health') { json(res, 200, { ok: true, twitchConfigured: configured }); return; }
+  if (method === 'GET' && url.pathname === '/auth/twitch/callback') { await callback(req, res, url); return; }
+  if (method === 'POST' && url.pathname === '/api/rooms') {
+    const body = await parseJson(req), ip = req.socket.remoteAddress || 'unknown', now = Date.now(), rate = ipRequests.get(ip);
+    if (rate && rate.expires > now && rate.count >= 15) { json(res, 429, { error: 'Too many rescue rooms. Please wait a minute.' }); return; }
+    ipRequests.set(ip, { count: rate && rate.expires > now ? rate.count + 1 : 1, expires: rate && rate.expires > now ? rate.expires : now + 60_000 });
+    if (rooms.size >= 200) { json(res, 503, { error: 'Mission control is full. Try again soon.' }); return; }
+    const mode = body.mode === 'twitch' ? 'twitch' : 'training';
+    let room = createRoom(mode, configured);
+    while (rooms.has(room.state.roomId)) room = createRoom(mode, configured);
+    rooms.set(room.state.roomId, room); json(res, 201, { roomId: room.state.roomId, hostToken: room.hostToken }); return;
+  }
+  const match = /^\/api\/rooms\/([a-zA-Z0-9]{6})(\/twitch(?:\/disconnect)?)?$/.exec(url.pathname);
+  if (match) {
+    const room = rooms.get(match[1].toUpperCase());
+    if (method === 'GET' && !match[2]) {
+      if (!room) { json(res, 404, { error: 'This rescue room does not exist or has expired.' }); return; }
+      json(res, 200, { roomId: room.state.roomId, phase: room.state.phase, mode: room.state.mode }); return;
+    }
+    if (method === 'POST' && match[2]) {
+      if (!room || !authorized(req, room)) { json(res, 403, { error: 'Only the pilot can manage Twitch.' }); return; }
+      await parseJson(req);
+      if (match[2] === '/twitch/disconnect') {
+        connections.get(room.state.roomId)?.stop(); connections.delete(room.state.roomId);
+        room.state.twitch = { status: 'offline', channel: null, error: null, configured }; broadcast(room); json(res, 200, { ok: true }); return;
+      }
+      if (!configured) { json(res, 400, { error: 'Set TWITCH_CLIENT_ID and TWITCH_CLIENT_SECRET in your server .env, then restart. Training mode is ready now.' }); return; }
+      const state = randomBytes(24).toString('hex'), cookie = randomBytes(24).toString('hex');
+      oauthStates.set(state, { roomId: room.state.roomId, cookie, expires: Date.now() + 10 * 60_000 });
+      res.setHeader('Set-Cookie', `signallost_oauth=${cookie}; Path=/auth/twitch/callback; HttpOnly; SameSite=Lax; Max-Age=600${config.redirectUri.startsWith('https:') ? '; Secure' : ''}`);
+      const authUrl = new URL('https://id.twitch.tv/oauth2/authorize');
+      authUrl.search = new URLSearchParams({ client_id: config.clientId, redirect_uri: config.redirectUri, response_type: 'code', scope: 'user:read:chat', state, force_verify: 'true' }).toString();
+      json(res, 200, { url: authUrl.toString() }); return;
+    }
+  }
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/auth/')) { json(res, 404, { error: 'Not found.' }); return; }
+  if (method !== 'GET' && method !== 'HEAD') { json(res, 405, { error: 'Method not allowed.' }); return; }
+  await serveStatic(req, res, url.pathname, dist);
+}
+const server = createServer({ maxHeaderSize: 16_384 }, (req, res) => {
+  void handle(req, res).catch(error => {
+    if (res.headersSent) { res.destroy(); return; }
+    if (error instanceof RequestError) { res.setHeader('Connection', 'close'); json(res, error.status, { error: error.message }); req.resume(); return; }
+    console.error('Request failed:', error instanceof Error ? error.name : 'Unknown error');
+    json(res, 500, { error: 'Mission control encountered a problem. Try again.' });
+  });
 });
-const server = createServer(app);
+server.requestTimeout = 15_000; server.headersTimeout = 10_000;
+
 const wss = new WebSocketServer({ noServer: true, maxPayload: 4096 });
 server.on('upgrade', (req, socket, head) => {
   const origin = req.headers.origin;
@@ -185,7 +148,7 @@ wss.on('connection', socket => {
           send(socket, { type: 'error', message: 'Pilot access is saved in the browser that created this room. Open it there or create a new rescue.' }); socket.close(1008); return;
         }
         clearTimeout(helloTimeout);
-        clients.set(socket, { roomId: room.state.roomId, role: message.role, alive: true, lastAction: 0 });
+        clients.set(socket, { roomId: room.state.roomId, role: message.role, alive: true, actionWindow: 0, actionCount: 0 });
         room.lastActive = Date.now();
         broadcast(room); return;
       }
@@ -193,8 +156,9 @@ wss.on('connection', socket => {
       if (!client) { socket.close(1008); return; }
       if (client.role !== 'host') { send(socket, { type: 'error', message: 'The pilot operates the cockpit. Send your findings through Twitch chat.' }); return; }
       const now = Date.now();
-      if (now - client.lastAction < 80) return;
-      client.lastAction = now;
+      // Limit floods while preserving legitimate quick actions and accessibility input.
+      if (now - client.actionWindow >= 1000) { client.actionWindow = now; client.actionCount = 0; }
+      if (++client.actionCount > 30) { socket.close(1008, 'Too many cockpit commands.'); return; }
       const room = rooms.get(client.roomId);
       if (!room) return;
       // Validate fields before letting a client reach game logic.
@@ -254,3 +218,4 @@ function shutdown() {
 }
 process.once('SIGTERM', shutdown);
 process.once('SIGINT', shutdown);
+

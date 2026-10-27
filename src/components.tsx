@@ -17,14 +17,14 @@ export function Logo({ small = false }: { small?: boolean }) {
 export function Badge({ children, tone = 'lime' }: { children: ReactNode; tone?: string }) {
   return <span className={`badge badge-${tone}`}><span className="status-dot" />{children}</span>;
 }
-export function CopyButton({ text, label = 'Copy link', className = '' }: { text: string; label?: string; className?: string }) {
+export function CopyButton({ text, label = 'Copy link', className = '', disabled = false }: { text: string; label?: string; className?: string; disabled?: boolean }) {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(false);
   async function handle() {
     try { await copy(text); setCopied(true); setError(false); setTimeout(() => setCopied(false), 2200); }
     catch { setError(true); }
   }
-  return <button className={`button button-quiet ${className}`} onClick={handle} title={text}>
+  return <button className={`button button-quiet ${className}`} onClick={handle} title={disabled ? 'Decode the four symbols first, or reveal the hints.' : text} disabled={disabled}>
     {copied ? <Check size={15} /> : <Copy size={15} />}{copied ? 'Copied' : error ? 'Select text to copy' : label}
   </button>;
 }
@@ -137,6 +137,13 @@ export function CrewRoster({ state }: { state: PublicState }) {
     <div className="crew-roles">{SPECIALTIES.map(role => <div key={role.id}><role.icon size={15}/><span>{role.short}</span><strong>{state.crew.filter(c => c.specialty === role.id).length.toString().padStart(2, '0')}</strong></div>)}</div>
     {state.crew.length > 0 && <div className="crew-names">{[...state.crew].sort((a, b) => b.contributions - a.contributions).slice(0, 6).map(c => <span key={c.id}>{c.name}<span className="subtle"> {c.contributions}</span></span>)}</div>}
     <p className="crew-note">One pilot. A whole community of heroes.</p>
+  </section>;
+}
+export function CrewReadback({ state }: { state: PublicState }) {
+  const findings = state.findings.slice(0, 3);
+  return <section className="panel readback-panel"><div className="panel-heading"><span className="eyebrow"><Activity size={14}/> CREW READBACK</span><span className="mono subtle">{findings[0]?.total || 0} voices</span></div>
+    {findings.length ? <div className="readback-findings">{findings.map((finding, i) => <div key={finding.label} className={i === 0 ? 'leading' : ''}><div><strong>{finding.label}</strong><span>{finding.votes}/{finding.total}</span></div><div className="readback-meter"><i style={{ width: `${finding.votes / finding.total * 100}%` }}/></div></div>)}</div> : <p className="readback-empty">Crew findings will appear here.<br/>Different voices. One shared decision.</p>}
+    <div className="readback-note">Each viewer gets one voice. The pilot makes the call.</div>
   </section>;
 }
 export function Footer() {

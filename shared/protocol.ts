@@ -48,6 +48,7 @@ export interface PublicState {
   enteredCode: Glyph[];
   crew: CrewMember[];
   signals: Signal[];
+  findings: { label: string; votes: number; total: number }[];
   feedback: { kind: 'success' | 'error' | 'info'; text: string; time: number } | null;
   viewers: number;
   twitch: { status: TwitchStatus; channel: string | null; error: string | null; configured: boolean };
