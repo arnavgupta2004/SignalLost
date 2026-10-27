@@ -13,13 +13,15 @@ export default function App() {
 }
 function Modal({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
-    ref.current?.querySelector<HTMLElement>('input, button')?.focus();
+    (ref.current?.querySelector<HTMLElement>('input') ?? ref.current?.querySelector<HTMLElement>('button'))?.focus();
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') closeRef.current();
       if (e.key !== 'Tab') return;
-      const elements = ref.current?.querySelectorAll<HTMLElement>('button, input, a[href]');
+      const elements = ref.current?.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), a[href]');
       if (!elements?.length) return;
       const first = elements[0], last = elements[elements.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -27,7 +29,7 @@ function Modal({ title, children, onClose }: { title: string; children: ReactNod
     };
     document.addEventListener('keydown', handler);
     return () => { document.removeEventListener('keydown', handler); previous?.focus(); };
-  }, [onClose]);
+  }, []);
   return <div className="modal-backdrop" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
     <div className="modal" role="dialog" aria-modal="true" aria-label={title} ref={ref}>
       <button className="icon-button modal-close" aria-label="Close dialog" onClick={onClose}><X size={20}/></button>

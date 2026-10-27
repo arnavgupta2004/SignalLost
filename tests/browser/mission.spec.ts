@@ -168,3 +168,15 @@ test('Twitch connection management rejects callers without pilot authorization',
   expect(info.hostToken).toBeUndefined();
   expect(info.intel).toBeUndefined();
 });
+test('room-code dialog keeps keyboard focus and successfully joins an existing crew', async ({ page }) => {
+  const roomId = await create(page);
+  await page.getByRole('link', { name: 'SignalLost home' }).click();
+  await page.getByRole('button', { name: 'Join a crew' }).click();
+  const input = page.getByRole('textbox', { name: 'RESCUE ROOM CODE' });
+  await expect(input).toBeFocused();
+  await input.pressSequentially(roomId, { delay: 20 });
+  await expect(input).toHaveValue(roomId);
+  await expect(input).toBeFocused();
+  await page.getByRole('button', { name: 'Get my intel' }).click();
+  await expect(page.getByRole('heading', { name: 'Every signal matters.' })).toBeVisible();
+});
