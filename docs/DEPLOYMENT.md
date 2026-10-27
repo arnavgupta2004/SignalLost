@@ -71,4 +71,4 @@ Only recognized commands are shown in the game. Ordinary conversation is ignored
 
 Automated tests cover the full training mission, client permissions, HTTP parsing, state isolation, and Twitch protocol behavior using fixtures. **A live broadcaster OAuth/EventSub session and a public deployment still require the entrant's accounts and must be verified before submission.** Training footage alone does not satisfy the rule requiring footage functioning on Twitch.
 
-Docker configuration is provided. If Docker is unavailable in your development environment, validate the image on your selected host before recording.
+The production Docker image has been built and smoke-tested successfully in GitHub CI, including health and frontend responses. Verify the environment configuration and live Twitch connection on your selected public host before recording.

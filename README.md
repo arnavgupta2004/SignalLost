@@ -87,6 +87,8 @@ npm run test:e2e
 
 Browser tests start a production server on port 4317 to avoid conflicting with normal development. Twitch protocol tests use fixtures; a live broadcaster session must be verified with your own Twitch app before submission.
 
+The final application passed **28 tests** and a production Docker build/startup check in [GitHub CI](https://github.com/arnavgupta2004/SignalLost/actions/runs/40521582904). Public-registry audits reported zero vulnerabilities. See the [validation record](docs/VALIDATION.md).
+
 ## Architecture
 
 - **React + TypeScript + Vite:** responsive cockpit, viewer intelligence, training, field manual, and transparent OBS overlay.
