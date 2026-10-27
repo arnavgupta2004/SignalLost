@@ -2,6 +2,10 @@ name: Validate SignalLost
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - docs/**
+      - README.md
+      - THIRD_PARTY_NOTICES.md
   pull_request:
 permissions:
   contents: read
@@ -23,8 +27,8 @@ jobs:
         run: |
           docker build --tag signallost:ci .
           docker run --detach --name signallost-ci --publish 127.0.0.1:4318:3001 --env APP_URL=http://localhost:4318 signallost:ci
-          trap 'docker rm -f signallost-ci' EXIT
-          curl --fail --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:4318/api/health
+          trap 'docker logs signallost-ci; docker rm -f signallost-ci' EXIT
+          curl --fail --retry 10 --retry-all-errors --retry-delay 1 --retry-max-time 30 --connect-timeout 2 --max-time 5 http://127.0.0.1:4318/api/health
           curl --fail --silent --output /dev/null http://127.0.0.1:4318/
       - uses: actions/upload-artifact@v4
         if: failure()
