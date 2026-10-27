@@ -6,6 +6,8 @@ A cooperative Twitch rescue mission: six survivors are stranded beyond the Keple
 
 Built during the Codex × TwitchCon Hackathon submission period, with OpenAI Codex.
 
+![SignalLost: bring them home](docs/images/home.png)
+
 ## Run locally
 
 Requires Node.js 22 or newer.
@@ -23,6 +25,8 @@ Open **http://localhost:5173**. Choose **Start training**, launch the rescue, an
 2. Viewers identify a safe corridor, the required power relays, and a four-symbol distress handshake. The cockpit does **not** receive these solutions.
 3. Viewers send findings through Twitch chat. The streamer chooses the route, operates relays, and transmits the code.
 4. Rescue all six survivors before the six-minute oxygen window closes. Mistakes cost 20% hull and 20 seconds. The debrief credits the crew.
+
+The **crew readback** counts each viewer's latest finding once, so the pilot sees community agreement without spam inflating it. Findings reset for each system.
 
 Viewer commands:
 
@@ -53,6 +57,8 @@ Uses Twitch OAuth authorization-code flow and EventSub WebSockets for `channel.c
 
 **A localhost crew link is not accessible to remote viewers.** Use a publicly accessible HTTPS deployment for a real community stream. Deployment instructions and submission materials are in `docs/`.
 
+[Deployment guide](docs/DEPLOYMENT.md) · [Devpost draft](docs/SUBMISSION.md) · [Demonstration script](docs/DEMO_SCRIPT.md)
+
 ## OBS
 
 Capture the cockpit browser window, or copy **Stream setup → Copy OBS overlay URL** into a Browser Source at **1920 × 1080**. The overlay has a transparent background and shows the objective, countdown, hull, room link, and latest crew signal. Keep viewer intel off stream.
@@ -77,10 +83,12 @@ npm run test:e2e
 
 `check` type-checks and builds the application, then runs mission-engine tests. Browser tests exercise the full pilot/viewer flow, permissions, reconnects, responsive layout, and OBS output.
 
+Browser tests start a production server on port 4317 to avoid conflicting with normal development. Twitch protocol tests use fixtures; a live broadcaster session must be verified with your own Twitch app before submission.
+
 ## Architecture
 
 - **React + TypeScript + Vite:** responsive cockpit, viewer intelligence, training, field manual, and transparent OBS overlay.
-- **Express + WebSockets:** authoritative mission state and role-specific state projections.
+- **Node HTTP + WebSockets:** authoritative mission state, bounded JSON requests, and role-specific state projections.
 - **Twitch OAuth + EventSub:** real chat input, token refresh, hourly validation, deduplication, and reconnect handling.
 - **Original SVG + CSS + Web Audio:** spacecraft, radar, glyphs, animations, and synthesized mission tones.
 
