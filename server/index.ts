@@ -438,7 +438,8 @@ const heartbeat = setInterval(() => {
     }
   }
 }, 30_000);
-server.listen(port, '0.0.0.0', () => {
+// No host: Node listens on all IPv6 and IPv4 interfaces, as platform health checks may use either.
+server.listen(port, () => {
   console.log(`SignalLost mission control: http://localhost:${port}`);
   console.log(
     `Twitch: ${configured ? 'configured' : 'training ready; configure .env for live chat'}`,
