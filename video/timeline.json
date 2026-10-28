@@ -1,0 +1,469 @@
+{
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "duration": 90,
+  "scenes": [
+    {
+      "id": "S01",
+      "name": "Cold open",
+      "start": 0,
+      "end": 7,
+      "chapter": null
+    },
+    {
+      "id": "S02",
+      "name": "The premise",
+      "start": 7,
+      "end": 16,
+      "chapter": "01 \u00b7 The premise"
+    },
+    {
+      "id": "S03",
+      "name": "One authoritative server",
+      "start": 16,
+      "end": 29,
+      "chapter": "02 \u00b7 Architecture"
+    },
+    {
+      "id": "S04",
+      "name": "Three systems, split evidence",
+      "start": 29,
+      "end": 49,
+      "chapter": "03 \u00b7 Split evidence"
+    },
+    {
+      "id": "S05",
+      "name": "Extraction",
+      "start": 49,
+      "end": 64,
+      "chapter": "04 \u00b7 Extraction"
+    },
+    {
+      "id": "S06",
+      "name": "Live chat pipeline",
+      "start": 64,
+      "end": 75,
+      "chapter": "05 \u00b7 Live chat"
+    },
+    {
+      "id": "S07",
+      "name": "What is proven",
+      "start": 75,
+      "end": 86,
+      "chapter": "06 \u00b7 What is proven"
+    },
+    {
+      "id": "S08",
+      "name": "End card",
+      "start": 86,
+      "end": 90,
+      "chapter": null
+    }
+  ],
+  "edits": [
+    {
+      "scene": "S02",
+      "clip": "home",
+      "role": "landing",
+      "start": 7.0,
+      "end": 10.6,
+      "align": {
+        "mark": "click",
+        "n": 0,
+        "at": 9.9
+      }
+    },
+    {
+      "scene": "S04",
+      "clip": "nav_crew",
+      "role": "crew",
+      "beat": 0,
+      "start": 29.0,
+      "end": 32.2,
+      "align": {
+        "mark": "click",
+        "n": 0,
+        "at": 31.8
+      }
+    },
+    {
+      "scene": "S04",
+      "clip": "nav_pilot",
+      "role": "pilot",
+      "beat": 0,
+      "start": 32.2,
+      "end": 35.8,
+      "align": {
+        "mark": "success",
+        "n": 0,
+        "at": 34.8
+      }
+    },
+    {
+      "scene": "S04",
+      "clip": "power_crew",
+      "role": "crew",
+      "beat": 1,
+      "start": 35.8,
+      "end": 39.0,
+      "align": {
+        "mark": "click",
+        "n": 1,
+        "at": 38.6
+      }
+    },
+    {
+      "scene": "S04",
+      "clip": "power_pilot",
+      "role": "pilot",
+      "beat": 1,
+      "start": 39.0,
+      "end": 42.4,
+      "align": {
+        "mark": "success",
+        "n": 0,
+        "at": 42.0
+      }
+    },
+    {
+      "scene": "S04",
+      "clip": "decode_crew",
+      "role": "crew",
+      "beat": 2,
+      "start": 42.4,
+      "end": 45.4,
+      "align": {
+        "mark": "click",
+        "n": 1,
+        "at": 44.6
+      }
+    },
+    {
+      "scene": "S04",
+      "clip": "decode_pilot",
+      "role": "pilot",
+      "beat": 2,
+      "start": 45.4,
+      "end": 49.0,
+      "align": {
+        "mark": "success",
+        "n": 0,
+        "at": 48.6
+      }
+    },
+    {
+      "scene": "S05",
+      "clip": "dock_crew",
+      "role": "crew",
+      "start": 49.0,
+      "end": 51.2,
+      "in": 0.9
+    },
+    {
+      "scene": "S05",
+      "clip": "dock_pilot",
+      "role": "pilot",
+      "start": 51.2,
+      "end": 58.6,
+      "align": {
+        "mark": "boost",
+        "n": 0,
+        "at": 58.3
+      }
+    },
+    {
+      "scene": "S05",
+      "clip": "dock_pilot",
+      "role": "pilot",
+      "start": 58.6,
+      "end": 62.6,
+      "continue": true,
+      "until": {
+        "mark": "success",
+        "n": 0,
+        "at": 62.3
+      },
+      "label": "speed"
+    },
+    {
+      "scene": "S05",
+      "clip": "debrief",
+      "role": "pilot",
+      "start": 62.6,
+      "end": 64.0,
+      "in": 0.2
+    }
+  ],
+  "beats": [
+    {
+      "index": "01",
+      "title": "Navigation",
+      "pilot": "Hull limits",
+      "crew": "Sector scans"
+    },
+    {
+      "index": "02",
+      "title": "Power",
+      "pilot": "The real switches",
+      "crew": "Four wiring rules"
+    },
+    {
+      "index": "03",
+      "title": "Handshake",
+      "pilot": "Transmission order",
+      "crew": "Symbol meanings"
+    }
+  ],
+  "voiceover": [
+    {
+      "scene": "S01",
+      "start": 0.9,
+      "end": 6.4,
+      "text": "Six people are stranded in a failing capsule. The rescue ship's sensors are dark.",
+      "cue": "Radar sweep finds six life signs; SignalLost wordmark resolves."
+    },
+    {
+      "scene": "S02",
+      "start": 7.4,
+      "end": 15.4,
+      "text": "SignalLost is a rescue game for a Twitch stream. The streamer flies the ship. The audience sees what the pilot cannot.",
+      "cue": "Real landing page; then the pilot's limits and the crew's scans side by side, the one safe sector highlighted."
+    },
+    {
+      "scene": "S03",
+      "start": 16.5,
+      "end": 28.3,
+      "text": "One Node server runs the mission and sends each screen only what its role allows. Viewers receive the intel. The cockpit and the stream overlay never do.",
+      "cue": "Mission engine diagram; state packets to all three screens, intel packets only to the crew."
+    },
+    {
+      "scene": "S04",
+      "start": 29.4,
+      "end": 35.4,
+      "text": "Every system splits the evidence. The pilot knows the hull's limits; chat holds the scans.",
+      "cue": "Crew proposes the safe sector; pilot sets course and the corridor clears."
+    },
+    {
+      "scene": "S04",
+      "start": 35.9,
+      "end": 42.0,
+      "text": "Engineers reason through four wiring rules that allow exactly one answer.",
+      "cue": "Crew reads the wiring rules and proposes relays; pilot flips them and engages power."
+    },
+    {
+      "scene": "S04",
+      "start": 42.6,
+      "end": 48.6,
+      "text": "Chat decodes the symbols, but the order to send them appears only in the cockpit.",
+      "cue": "Crew maps bands to symbols; pilot enters them in transmission order and transmits."
+    },
+    {
+      "scene": "S05",
+      "start": 49.4,
+      "end": 53.6,
+      "text": "The final approach is flown by hand against ion drift.",
+      "cue": "Crew sees the safe lane; pilot steers, engages the tractor beam."
+    },
+    {
+      "scene": "S05",
+      "start": 55.4,
+      "end": 62.4,
+      "text": "Any viewer can send boost to steady the ship for six seconds: one cell each, three per mission.",
+      "cue": "Boost lands; stabilization countdown; recovery climbs (sped up 2.4\u00d7) to the debrief."
+    },
+    {
+      "scene": "S06",
+      "start": 64.6,
+      "end": 74.6,
+      "text": "Live chat reaches the server through Twitch EventSub, with a read-only scope. Messages are de-duplicated, parsed into commands, and survive reconnects.",
+      "cue": "A !boost message travels OAuth \u2192 EventSub \u2192 de-duplication \u2192 parser \u2192 engine."
+    },
+    {
+      "scene": "S07",
+      "start": 75.5,
+      "end": 85.8,
+      "text": "Everything shown is the real app in training mode, with a simulated crew. Forty-two automated tests cover the rules; real chat is proven only on stream.",
+      "cue": "Synthetic validation versus real-world validation, side by side."
+    },
+    {
+      "scene": "S08",
+      "start": 86.4,
+      "end": 89.4,
+      "text": "Six lives. One pilot. A whole crew.",
+      "cue": "End card: wordmark, live URL and repository."
+    }
+  ],
+  "sfx": [
+    {
+      "time": 0.25,
+      "type": "impact",
+      "gain": 0.9
+    },
+    {
+      "time": 4.95,
+      "type": "shimmer",
+      "gain": 0.6
+    },
+    {
+      "time": 6.85,
+      "type": "whoosh",
+      "gain": 0.45
+    },
+    {
+      "time": 10.5,
+      "type": "whoosh",
+      "gain": 0.4
+    },
+    {
+      "time": 13.4,
+      "type": "confirm",
+      "gain": 0.5
+    },
+    {
+      "time": 15.85,
+      "type": "whoosh",
+      "gain": 0.45
+    },
+    {
+      "time": 17.2,
+      "type": "data",
+      "gain": 0.35
+    },
+    {
+      "time": 22.4,
+      "type": "ping",
+      "gain": 0.4
+    },
+    {
+      "time": 25.0,
+      "type": "tick",
+      "gain": 0.4
+    },
+    {
+      "time": 28.85,
+      "type": "whoosh",
+      "gain": 0.45
+    },
+    {
+      "time": 48.85,
+      "type": "whoosh",
+      "gain": 0.45
+    },
+    {
+      "time": 63.85,
+      "type": "whoosh",
+      "gain": 0.45
+    },
+    {
+      "time": 65.6,
+      "type": "data",
+      "gain": 0.3
+    },
+    {
+      "time": 67.6,
+      "type": "data",
+      "gain": 0.3
+    },
+    {
+      "time": 69.6,
+      "type": "data",
+      "gain": 0.3
+    },
+    {
+      "time": 71.6,
+      "type": "confirm",
+      "gain": 0.4
+    },
+    {
+      "time": 74.85,
+      "type": "whoosh",
+      "gain": 0.45
+    },
+    {
+      "time": 85.85,
+      "type": "whoosh",
+      "gain": 0.4
+    },
+    {
+      "time": 86.4,
+      "type": "resolve",
+      "gain": 0.7
+    }
+  ],
+  "music": [
+    {
+      "start": 0,
+      "end": 7,
+      "section": "Intro drone",
+      "note": "Low D drone and air; no melody, leaves room for the cold-open line."
+    },
+    {
+      "start": 7,
+      "end": 29,
+      "section": "Pad progression",
+      "note": "Dm9 \u2192 B\u266dmaj7 \u2192 Fadd9 \u2192 Csus2, eight-second chords, very soft."
+    },
+    {
+      "start": 29,
+      "end": 49,
+      "section": "Working pulse",
+      "note": "Adds a muted 96 BPM pulse under the pads while the systems are solved."
+    },
+    {
+      "start": 49,
+      "end": 64,
+      "section": "Extraction build",
+      "note": "Pulse brightens and rises toward the rescue; resolves on the debrief."
+    },
+    {
+      "start": 64,
+      "end": 75,
+      "section": "Pipeline",
+      "note": "Pulse drops out; steady pads under the diagram."
+    },
+    {
+      "start": 75,
+      "end": 86,
+      "section": "Validation",
+      "note": "Thinned to a low pad so the honest caveat is clearly heard."
+    },
+    {
+      "start": 86,
+      "end": 90,
+      "section": "Resolve",
+      "note": "Dmaj9-colour resolve, fades to silence by 90 s."
+    }
+  ],
+  "stills": {
+    "pilotLimits": {
+      "clip": "nav_pilot",
+      "rect": "limits",
+      "time": 0.05
+    },
+    "crewReadings": {
+      "clip": "nav_crew",
+      "rect": "readings",
+      "time": 2.6
+    }
+  },
+  "lifeSigns": [1.7, 2.05, 2.4, 2.75, 3.1, 3.45],
+  "markSfx": {
+    "click": {
+      "type": "tick",
+      "gain": 0.3
+    },
+    "success": {
+      "type": "confirm",
+      "gain": 0.45
+    },
+    "tractor": {
+      "type": "tractor",
+      "gain": 0.5
+    },
+    "boost": {
+      "type": "boost",
+      "gain": 0.6
+    }
+  }
+}

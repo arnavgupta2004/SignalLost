@@ -1,0 +1,12 @@
+scene_id,start_time,end_time,narration,visual_cue
+S01,00:00.9,00:06.4,"Six people are stranded in a failing capsule. The rescue ship's sensors are dark.","Radar sweep finds six life signs; SignalLost wordmark resolves."
+S02,00:07.4,00:15.4,"SignalLost is a rescue game for a Twitch stream. The streamer flies the ship. The audience sees what the pilot cannot.","Real landing page; then the pilot's limits and the crew's scans side by side, the one safe sector highlighted."
+S03,00:16.5,00:28.3,"One Node server runs the mission and sends each screen only what its role allows. Viewers receive the intel. The cockpit and the stream overlay never do.","Mission engine diagram; state packets to all three screens, intel packets only to the crew."
+S04,00:29.4,00:35.4,"Every system splits the evidence. The pilot knows the hull's limits; chat holds the scans.","Crew proposes the safe sector; pilot sets course and the corridor clears."
+S04,00:35.9,00:42.0,"Engineers reason through four wiring rules that allow exactly one answer.","Crew reads the wiring rules and proposes relays; pilot flips them and engages power."
+S04,00:42.6,00:48.6,"Chat decodes the symbols, but the order to send them appears only in the cockpit.","Crew maps bands to symbols; pilot enters them in transmission order and transmits."
+S05,00:49.4,00:53.6,"The final approach is flown by hand against ion drift.","Crew sees the safe lane; pilot steers, engages the tractor beam."
+S05,00:55.4,01:02.4,"Any viewer can send boost to steady the ship for six seconds: one cell each, three per mission.","Boost lands; stabilization countdown; recovery climbs (sped up 2.4×) to the debrief."
+S06,01:04.6,01:14.6,"Live chat reaches the server through Twitch EventSub, with a read-only scope. Messages are de-duplicated, parsed into commands, and survive reconnects.","A !boost message travels OAuth → EventSub → de-duplication → parser → engine."
+S07,01:15.5,01:25.8,"Everything shown is the real app in training mode, with a simulated crew. Forty-two automated tests cover the rules; real chat is proven only on stream.","Synthetic validation versus real-world validation, side by side."
+S08,01:26.4,01:29.4,"Six lives. One pilot. A whole crew.","End card: wordmark, live URL and repository."

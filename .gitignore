@@ -8,3 +8,8 @@ test-results/
 *.log
 .DS_Store
 .local/
+
+# Generated film media (rebuild with video/build.sh)
+video/build/
+video/out/
+video/voiceover.wav
