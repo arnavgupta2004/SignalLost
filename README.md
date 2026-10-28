@@ -94,7 +94,7 @@ npm run test:e2e
 
 Browser tests start a production server on port 4317 to avoid conflicting with normal development. Twitch protocol tests use fixtures; a live broadcaster session must be verified with your own Twitch app before submission.
 
-The quality-upgraded application passed **42 automated tests** and a production Docker build/startup check in [GitHub CI](https://github.com/arnavgupta2004/SignalLost/actions/runs/40650074977). Public-registry audits reported zero vulnerabilities. See the [validation record](docs/VALIDATION.md) and [judging-focused quality review](docs/QUALITY_REVIEW.md).
+The quality-upgraded application passed **42 automated tests** and a production Docker build/startup check in [GitHub CI](https://github.com/arnavgupta2004/SignalLost/actions/runs/40651969965). Public-registry audits reported zero vulnerabilities. See the [validation record](docs/VALIDATION.md) and [judging-focused quality review](docs/QUALITY_REVIEW.md).
 
 `npm run format:check` and `npm run check:portability` keep the source reviewable and dependency installation portable.
 

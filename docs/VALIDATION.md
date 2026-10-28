@@ -1,6 +1,6 @@
 # Validation record
 
-The quality-upgraded application passed on October 28, 2026 in [GitHub CI run 40650074977](https://github.com/arnavgupta2004/SignalLost/actions/runs/40650074977), application commit `f82190b`.
+The quality-upgraded application passed on October 28, 2026 in [GitHub CI run 40651969965](https://github.com/arnavgupta2004/SignalLost/actions/runs/40651969965), application commit `fdd08ab`.
 
 Local verification used Windows, Node.js 24.19.0, and Playwright Chromium. CI used Ubuntu, Node.js 24, and the production Node 24 Alpine Docker image.
 
