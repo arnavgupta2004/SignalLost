@@ -111,4 +111,4 @@ Room progress is held in memory. Restarting the server clears missions and Twitc
 
 Codex designed and implemented the mission engine, Twitch integration, interface, original vector assets, and automated tests through iterative development in the hackathon workspace. The entry’s submission materials should include the actual Codex thread ID and footage of the build session. No runtime model API key is needed.
 
-Original project code and artwork are provided for free judging and testing. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for dependencies and assets.
+SignalLost's original code and artwork are released under the [MIT License](LICENSE). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for dependencies and assets.

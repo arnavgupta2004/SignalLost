@@ -2,6 +2,7 @@
   "name": "signallost",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "An asymmetric Twitch rescue mission. The streamer has the controls. Chat has the answers.",
   "scripts": {
