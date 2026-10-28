@@ -13,7 +13,9 @@ const final = path.resolve('video/build/footage');
 const out = `${final}.partial`;
 await rm(out, { recursive: true, force: true });
 const FPS = 30;
-// 1440×810 CSS pixels rendered at 4/3 gives sharp 1920×1080 frames with a desktop layout.
+// A 1440×810 desktop layout. The screencast delivers frames at this CSS-pixel size (1440×810),
+// not at the 4/3 device scale; recorded rectangles are in 1920-wide device pixels and the
+// compositor maps both onto a 1920-wide frame.
 const viewport = { width: 1440, height: 810 };
 const deviceScaleFactor = 4 / 3;
 

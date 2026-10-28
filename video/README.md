@@ -56,6 +56,7 @@ Requirements: Node 22+, the repository's npm dependencies, Python 3 with NumPy, 
 
 - **No live Twitch footage.** All app footage is training mode with simulated crew messages, which the film states on screen and in narration. If the competition requires showing the app working on Twitch, record a short live clip (a real viewer's `!boost` during docking is the strongest moment) and cut it in around S05 or after S06.
 - **No build-process footage.** The film does not show how the project was built. If the rules ask for that, add a separate segment.
+- **App footage is 1440×810.** Chrome's screencast records at CSS-pixel size. It is shown downscaled (1280×720) almost everywhere, but the zoomed lenses in S02 enlarge it about 1.5×, so that text is slightly soft. Replacing those two lens stills with device-scale screenshots would sharpen it.
 - **The audio was checked by measurement, not by ear.** The production environment had no audio playback. Loudness, peaks, timing and waveforms were verified (see `build/qa/report.txt`), but listen to the music and effects before submitting. A licensed track can replace `build/audio/music.wav`.
 - **The live URL on the end card** (`signallost-vpnz.onrender.com`) is shown as provided. Confirm it loads before you publish.
 - **Test counts** (29 unit + 13 browser) reflect CI on October 28, 2026. Update S07 and the narration if they change.
