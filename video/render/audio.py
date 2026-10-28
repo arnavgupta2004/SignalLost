@@ -114,7 +114,7 @@ music = pads * section_gain
 drone_env = smooth(t_all, 0, 2.5) * (1 - smooth(t_all, 7.5, 10))
 drone = sum(np.sin(2 * np.pi * midi(n) * t_all + rng.uniform(0, 6)) / k for k, n in [(1, 26), (2, 38), (3, 45)])
 air = band(rng.standard_normal(N), 300, 2500) * 0.025
-music += (0.09 * drone + air) * drone_env
+music += (0.16 * drone + air * 1.6) * drone_env
 
 # Working pulse (29–64 s): muted plucks at 96 BPM on chord tones; brighter during extraction.
 beat = 60 / 96
@@ -141,7 +141,10 @@ music += resolve * (1 - smooth(t_all, 88.6, 89.8))
 wet = reverb(music, seconds=3.2, decay=1.1, seed=11)
 music_st = np.stack([music, music], axis=1) * 0.55 + wet * 0.75
 music_st *= (1 - smooth(t_all, 89.0, 89.9))[:, None]
-music_st *= 10 ** (-18 / 20) / np.max(np.abs(music_st))  # peaks at −18 dBFS, leaving room for voice
+# Level by loudness, not peak: the main pad section sits at −27 dBFS RMS, a bed that stays
+# under a voice recorded around −16 LUFS; the closing chord is then the loudest moment.
+main = music_st[7 * SR : 29 * SR]
+music_st *= 10 ** (-27 / 20) / np.sqrt(np.mean(main**2))
 
 # ---------------------------------------------------------------- sound effects
 fx = np.zeros(N)

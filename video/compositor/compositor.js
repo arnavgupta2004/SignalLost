@@ -135,8 +135,9 @@ const scenesLayer = el('div', 'layer');
 const chrome = el('div', 'layer');
 el('div', 'layer vignette');
 const grain = el('div', 'layer grain');
-// Deterministic film grain: four seeded noise tiles, cycled every other frame.
-const grainTiles = [1, 2, 3, 4].map((seed) => {
+// Deterministic film grain from a seeded noise tile. It is held still: per-frame noise would
+// multiply the encoded bitrate and is smeared by any platform re-encode anyway.
+const grainTile = [1].map((seed) => {
   let a = seed * 2654435761;
   const rand = () => {
     a = (a + 0x6d2b79f5) | 0;
@@ -154,7 +155,9 @@ const grainTiles = [1, 2, 3, 4].map((seed) => {
   }
   g.putImageData(data, 0, 0);
   return `url(${c.toDataURL()})`;
-});
+})[0];
+
+grain.style.backgroundImage = grainTile;
 
 const sceneDef = Object.fromEntries(T.scenes.map((s) => [s.id, s]));
 const scenes = [];
@@ -902,6 +905,7 @@ function updateChrome(t) {
 }
 
 // ---------- frame entry point ----------
+const pushed = new Set(['S02', 'S03', 'S06', 'S07', 'S08']);
 async function render(frame) {
   const t = frame / FPS;
   pending.length = 0;
@@ -909,10 +913,12 @@ async function render(frame) {
     const o = envelope(t, s.start, s.end);
     s.root.style.opacity = o.toFixed(4);
     s.root.style.visibility = o > 0.001 ? 'visible' : 'hidden';
+    // A slow camera push keeps graphics scenes alive through their holds.
+    if (pushed.has(s.id))
+      s.root.style.transform = `scale(${(1 + 0.02 * prog(t, s.start, s.end)).toFixed(5)})`;
     if (o > 0.001) s.update(t);
   }
   updateChrome(t);
-  grain.style.backgroundImage = grainTiles[Math.floor(frame / 2) % grainTiles.length];
   await Promise.all(pending);
 }
 await Promise.all(

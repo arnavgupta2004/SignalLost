@@ -34,7 +34,7 @@ node -e '
   for (const s of t.scenes) console.log(s.id, s.start, s.end);
 ' | while read -r id start end; do
   len=$(echo "$end - $start" | bc -l)
-  ffmpeg -v error -y -ss "$start" -t "$len" -i "$film" \
+  ffmpeg -nostdin -v error -y -ss "$start" -t "$len" -i "$film" \
     -vf "fps=6/$len,scale=640:-1,tile=3x2:padding=6:color=0x333333" -frames:v 1 "$qa/scene_$id.jpg"
 done
 for stem in music sfx bed; do
