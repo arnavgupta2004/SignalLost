@@ -1,6 +1,6 @@
 # Validation record
 
-The quality-upgraded application passed on October 27, 2026 in [GitHub CI run 40552524553](https://github.com/arnavgupta2004/SignalLost/actions/runs/40552524553), application commit `1d98194eccb19bfd171bf67283b89eb022c2f2c2`.
+The quality-upgraded application passed on October 28, 2026 in [GitHub CI run 40650074977](https://github.com/arnavgupta2004/SignalLost/actions/runs/40650074977), application commit `f82190b`.
 
 Local verification used Windows, Node.js 24.19.0, and Playwright Chromium. CI used Ubuntu, Node.js 24, and the production Node 24 Alpine Docker image.
 
@@ -11,9 +11,9 @@ Local verification used Windows, Node.js 24.19.0, and Playwright Chromium. CI us
 | Portable public-registry dependency URLs and integrity hashes | Passed                                                                     |
 | Vite production build                                         | Passed                                                                     |
 | Mission-engine tests                                          | 23 passed                                                                  |
-| Twitch OAuth/EventSub fixture tests                           | 5 passed                                                                   |
+| Twitch OAuth/EventSub fixture tests                           | 6 passed                                                                   |
 | Browser integration tests                                     | 13 passed                                                                  |
-| Total automated tests                                         | **41 passed**                                                              |
+| Total automated tests                                         | **42 passed**                                                              |
 | Public-registry dependency audits                             | **0 reported vulnerabilities**, including production-only dependencies     |
 | Production Docker image build                                 | Passed                                                                     |
 | Container health and frontend responses                       | Passed                                                                     |
@@ -27,7 +27,7 @@ The browser suite completes both Cadet and Commander rescues through navigation,
 
 Mission tests check uniquely solvable wiring and navigation, distinct Commander symbols and a non-default transmission order, authoritative time and heat, correct docking alignment, one cell per viewer and three per mission, exactly six seconds of stabilization, pause behavior, and flight-recorder timing independent of oxygen penalties. Live missions wait for a connected Twitch uplink before launch; training remains available without credentials.
 
-Protocol fixtures verify code exchange, chat permission checks, the EventSub subscription condition, message deduplication, session migration without duplicate subscriptions, and revocation handling.
+Protocol fixtures verify code exchange, chat permission checks, the EventSub subscription condition, message deduplication, session migration without duplicate subscriptions, revocation handling, and ignoring token validation that completes after a connection stops.
 
 ## Final gate before submission
 
