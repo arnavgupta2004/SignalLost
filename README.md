@@ -64,7 +64,7 @@ Uses Twitch OAuth authorization-code flow and EventSub WebSockets for `channel.c
 
 **A localhost crew link is not accessible to remote viewers.** Use a publicly accessible HTTPS deployment for a real community stream. Deployment instructions and submission materials are in `docs/`.
 
-[Deployment guide](docs/DEPLOYMENT.md) · [Devpost draft](docs/SUBMISSION.md) · [Demonstration script](docs/DEMO_SCRIPT.md)
+[Live app](https://signallost-vpnz.onrender.com) · [Deployment guide](docs/DEPLOYMENT.md) · [Devpost draft](docs/SUBMISSION.md) · [Demonstration script](docs/DEMO_SCRIPT.md)
 
 If you keep the repository private, the hackathon rules require sharing it with **testing@devpost.com** on GitHub or GitLab. Confirm judge access before submitting.
 

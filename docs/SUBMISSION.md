@@ -63,6 +63,10 @@ More missions, difficulty levels, and richer clues for individual crew specialti
 
 OpenAI Codex, TypeScript, React, Vite, Node.js, WebSockets, Twitch OAuth, Twitch EventSub, OBS Browser Sources, Playwright.
 
+## Live application
+
+https://signallost-vpnz.onrender.com
+
 ## Repository
 
 https://github.com/arnavgupta2004/SignalLost
@@ -83,7 +87,6 @@ For Twitch setup, follow the README and `docs/DEPLOYMENT.md`. No runtime OpenAI 
 ## Fill in before submitting
 
 - Public YouTube demonstration URL, **under three minutes**.
-- Public application URL, if deployed.
 - Entrant/team details and the authorized team representative, if applicable.
 - Confirm live Twitch OAuth/EventSub works with the actual demonstration channel.
 - Confirm all screenshots and footage match the final submitted version.

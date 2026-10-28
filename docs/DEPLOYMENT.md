@@ -9,13 +9,14 @@ SignalLost needs a Node server with WebSocket support. A static-only host such a
 The repository includes a Dockerfile and `render.yaml` blueprint. Connect your own Render account and deploy the web service. In its environment configuration, use:
 
 ```text
+PORT=10000
 APP_URL=https://YOUR-SERVICE.onrender.com
 TWITCH_REDIRECT_URI=https://YOUR-SERVICE.onrender.com/auth/twitch/callback
 TWITCH_CLIENT_ID=your Twitch application client ID
 TWITCH_CLIENT_SECRET=your Twitch application client secret
 ```
 
-Use the actual service URL assigned by Render. Set `APP_URL` to a valid URL before startup. You can initially omit the Twitch keys to test training mode. Register the exact callback URL in your Twitch application's OAuth redirect list before connecting.
+Render health-checks port 10000, so set `PORT=10000`; the image otherwise defaults to 3001. Use the actual service URL assigned by Render, which may include a suffix such as `signallost-vpnz`. Set `APP_URL` to a valid URL before startup. You can initially omit the Twitch keys to test training mode. Register the exact callback URL in your Twitch application's OAuth redirect list before connecting.
 
 The server honors the platform's `PORT` environment variable. `/api/health` is the health endpoint. Use one instance: room state lives in process memory.
 
