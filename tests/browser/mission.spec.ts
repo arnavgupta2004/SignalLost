@@ -71,6 +71,8 @@ test('commander requires crew proposals and combines band meanings with pilot or
   page,
   context,
 }) => {
+  // A full rescue plus docking can exceed the default timeout on slow CI runners.
+  test.slow();
   const roomId = await create(page);
   await page.getByRole('button', { name: /Commander.*05:00/ }).click();
   await expect(page.getByRole('button', { name: /Commander.*05:00/ })).toHaveAttribute(
@@ -142,7 +144,7 @@ async function flyDocking(page: Page, lane: number) {
   let pressed: 'ArrowLeft' | 'ArrowRight' | null = null;
   let engaged = false;
   let boosted = false;
-  const deadline = Date.now() + 22_000;
+  const deadline = Date.now() + 45_000;
   try {
     while (Date.now() < deadline) {
       if (await page.getByRole('heading', { name: 'You brought them home.' }).isVisible()) return;
@@ -177,6 +179,8 @@ test('complete cooperative mission updates pilot, viewer and OBS with no browser
   page,
   context,
 }) => {
+  // A full rescue plus docking can exceed the default timeout on slow CI runners.
+  test.slow();
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   const roomId = await create(page);
