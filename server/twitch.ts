@@ -84,6 +84,7 @@ export class TwitchConnection {
     // Twitch requires token validation at startup and hourly.
     this.validationTimer = setInterval(() => {
       void validateToken(this.config, this.tokens.access_token).catch(() => {
+        if (this.stopped) return;
         this.stop();
         this.hooks.status('error', 'Twitch authorization was revoked. Connect your channel again.');
       });

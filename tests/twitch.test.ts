@@ -159,6 +159,38 @@ test('EventSub session migration keeps subscriptions and closes the old socket a
     fetchMock.mock.restore();
   }
 });
+test('hourly validation finishing after stop does not overwrite the room status', async () => {
+  mock.timers.enable({ apis: ['setInterval', 'setTimeout'] });
+  let rejectValidation: (error: Error) => void = () => {};
+  const fetchMock = mock.method(
+    globalThis,
+    'fetch',
+    () =>
+      new Promise<Response>((_resolve, reject) => {
+        rejectValidation = reject;
+      }),
+  );
+  const statuses: TwitchStatus[] = [];
+  const connection = new TwitchConnection(
+    config,
+    { ...tokens },
+    { userId: '42', login: 'fixture' },
+    { status: (status) => statuses.push(status), chat: () => {} },
+    () => new FixtureSocket() as unknown as WebSocket,
+  );
+  try {
+    connection.start();
+    mock.timers.tick(60 * 60_000);
+    connection.stop();
+    rejectValidation(new Error('revoked'));
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.ok(!statuses.includes('error'));
+  } finally {
+    connection.stop();
+    fetchMock.mock.restore();
+    mock.timers.reset();
+  }
+});
 test('revoked subscription stops chat and reports an actionable reconnect error', async () => {
   const socket = new FixtureSocket();
   let error = '';
